@@ -25,6 +25,8 @@ const envSchema = z.object({
 
   CHRONOS_FCM_CREDENTIALS: z.string().optional(),
   CHRONOS_FCM_PROJECT_ID: z.string().optional(),
+  CHRONOS_FREERADIUS_IP: z.string().optional(),
+  CHRONOS_FREERADIUS_SHARED_SECRET: z.string().optional(),
   CHRONOS_LOG_LEVEL: z
     .enum(['trace', 'debug', 'info', 'warning', 'error'])
     .default('info'),
@@ -68,6 +70,7 @@ const envSchema = z.object({
     (v) => (typeof v === 'string' ? v.split(',').map((s) => s.trim()) : v),
     z.array(z.url()).optional()
   ),
+  CHRONOS_WIFI_ENCRYPTION_SECRET: z.string().optional(),
 });
 
 const makeTypedEnvironment =

@@ -1,0 +1,5 @@
+export const WIFI_ENTRA_CREATOR_ID = '00000000-0000-0000-0000-000000000001';
+
+export const SPEED_PROFILE_NONE = '__none__';
+export const RADIUS_HEALTH_USERNAME = 'radtest';
+export const RADIUS_SESSION_TIMEOUT_SECONDS = 60 * 60;
