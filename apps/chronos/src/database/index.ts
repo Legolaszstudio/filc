@@ -10,6 +10,7 @@ import { doorlockSchema } from '#database/schema/doorlock';
 import { newsSchema } from '#database/schema/news';
 import { notificationsSchema } from '#database/schema/notifications';
 import { timetableSchema } from '#database/schema/timetable';
+import { wifiSchema } from '#database/schema/wifi';
 import { env } from '#utils/environment';
 
 const logger = getLogger(['chronos', 'drizzle']);
@@ -46,6 +47,7 @@ const schema = {
   ...newsSchema,
   ...notificationsSchema,
   ...timetableSchema,
+  ...wifiSchema,
 };
 
 export const db = drizzle({
