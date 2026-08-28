@@ -24,9 +24,23 @@ import {
 import { authorizeRadiusRoute } from '#routes/wifi/radius';
 import { getSelfWifiRoute, updateSelfWifiDeviceRoute } from '#routes/wifi/self';
 import { wifiStatsRoute } from '#routes/wifi/stats';
+import { env } from '#utils/environment';
 
 export const wifiRouter = wifiFactory
   .createApp()
+  .use('*', async (c, next) => {
+    if (!env.wifiEnabled) {
+      return c.json(
+        {
+          code: 'WIFI_DISABLED',
+          error: 'Service Unavailable',
+          message: 'WiFi is disabled.',
+        },
+        503
+      );
+    }
+    return await next();
+  })
   .post('/radius/authorize', ...authorizeRadiusRoute)
   .get('/self', ...getSelfWifiRoute)
   .put('/self/devices/:id', ...updateSelfWifiDeviceRoute)

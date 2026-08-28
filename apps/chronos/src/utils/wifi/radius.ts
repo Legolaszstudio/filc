@@ -10,10 +10,10 @@ import {
   RADIUS_HEALTH_USERNAME,
   RADIUS_SESSION_TIMEOUT_SECONDS,
 } from './constants';
+import type { WifiController } from './controller';
 import { decryptPassword } from './encryptor';
 import { canonicalizeMac } from './mac';
 import { resolveEffectiveSpeedProfile } from './speed-profile';
-import type { UnifiClient } from './unifi-api';
 
 export type RadiusAuthorizeRequest = {
   IP?: string;
@@ -36,7 +36,7 @@ export type RadiusAuthorizeOptions = {
   realIp?: string | undefined;
   sessionTimeoutSeconds?: number;
   sharedSecret: string;
-  unifi?: UnifiClient | undefined;
+  controller?: WifiController | undefined;
 };
 
 const reject = (
@@ -90,7 +90,6 @@ const validateRequestSource = async (
     }
     return null;
   }
-
   if (options.realIp !== options.freeradiusIp) {
     await log(false, 'forbidden_source');
     return reject(
@@ -125,13 +124,13 @@ const validateRequestSource = async (
   return null;
 };
 
-const enrichUnifiDevice = (
+const enrichControllerDevice = (
   mac: string,
   account: typeof wifiUser.$inferSelect,
-  unifi: UnifiClient
+  controller: WifiController
 ): void => {
   Promise.all([
-    unifi
+    controller
       .fetchClientHostname(mac)
       .then((reportedHostname) =>
         reportedHostname
@@ -142,7 +141,7 @@ const enrichUnifiDevice = (
           : undefined
       ),
     resolveEffectiveSpeedProfile(account).then((profileId) =>
-      profileId ? unifi.applySpeedProfile(mac, profileId) : undefined
+      profileId ? controller.applySpeedProfile(mac, profileId) : undefined
     ),
   ]).catch(() => undefined);
 };
@@ -153,7 +152,6 @@ export const authorizeRadius = async (
 ): Promise<RadiusAuthorizeResult> => {
   const mac = normalizeSourceMac(request.source);
   const nasMac = normalizeNasMac(request.NAS);
-
   if (!options.sharedSecret || request.sharedSecret !== options.sharedSecret) {
     return reject(
       403,
@@ -161,7 +159,6 @@ export const authorizeRadius = async (
       'FORBIDDEN'
     );
   }
-
   const log = async (
     result: boolean,
     failureReason: string | null,
@@ -177,7 +174,6 @@ export const authorizeRadius = async (
       wifiUserId,
     });
   };
-
   const sourceError = await validateRequestSource(
     request,
     options,
@@ -187,7 +183,6 @@ export const authorizeRadius = async (
   if (sourceError) {
     return sourceError;
   }
-
   const [globalDevice] = await db
     .select({ banned: wifiDevice.banned })
     .from(wifiDevice)
@@ -201,7 +196,6 @@ export const authorizeRadius = async (
       'FORBIDDEN'
     );
   }
-
   const [account] = await db
     .select()
     .from(wifiUser)
@@ -219,7 +213,6 @@ export const authorizeRadius = async (
       'FORBIDDEN'
     );
   }
-
   const allowedMacs = account.allowedMacAddresses ?? [];
   if (
     allowedMacs.length > 0 &&
@@ -238,7 +231,6 @@ export const authorizeRadius = async (
       'NOT_WHITELISTED'
     );
   }
-
   try {
     const password = decryptPassword(
       account.encryptedPassword,
@@ -254,7 +246,6 @@ export const authorizeRadius = async (
         'FORBIDDEN'
       );
     }
-
     await db
       .insert(wifiDevice)
       .values({
@@ -271,11 +262,9 @@ export const authorizeRadius = async (
         target: wifiDevice.macAddress,
       });
     await log(true, null, account.id);
-
-    if (options.unifi) {
-      enrichUnifiDevice(mac, account, options.unifi);
+    if (options.controller) {
+      enrichControllerDevice(mac, account, options.controller);
     }
-
     return {
       body: {
         'Cleartext-Password': password,

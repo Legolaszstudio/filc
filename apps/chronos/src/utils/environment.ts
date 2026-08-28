@@ -70,7 +70,13 @@ const envSchema = z.object({
     (v) => (typeof v === 'string' ? v.split(',').map((s) => s.trim()) : v),
     z.array(z.url()).optional()
   ),
+  CHRONOS_WIFI_CONTROLLER_PROVIDER: z.enum(['none', 'unifi']).default('none'),
+  CHRONOS_WIFI_ENABLED: boolean.default(true),
   CHRONOS_WIFI_ENCRYPTION_SECRET: z.string().optional(),
+  UNIFI_HOST: z.string().optional(),
+  UNIFI_PASSWORD: z.string().optional(),
+  UNIFI_PORT: z.coerce.number().min(MIN_PORT).max(MAX_PORT).default(8443),
+  UNIFI_USERNAME: z.string().optional(),
 });
 
 const makeTypedEnvironment =

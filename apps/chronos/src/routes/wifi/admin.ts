@@ -34,15 +34,12 @@ import { authRouter } from '#middleware/auth';
 import { env } from '#utils/environment';
 import { created, notFound, ok } from '#utils/http';
 import { filcExt } from '#utils/openapi';
+import {
+  getWifiController,
+  type WifiSpeedProfile,
+} from '#utils/wifi/controller';
 import { encryptPassword } from '#utils/wifi/encryptor';
 import { canonicalizeMac } from '#utils/wifi/mac';
-import type { UnifiSpeedProfile } from '#utils/wifi/unifi-api';
-import {
-  createSpeedProfile,
-  deleteSpeedProfile,
-  getSpeedProfiles,
-  updateSpeedProfile,
-} from '#utils/wifi/unifi-helpers';
 import { wifiFactory } from './_factory';
 
 const response = (
@@ -89,14 +86,16 @@ const { schema: wifiRoleProfileUpdateOpenApiSchema } = await resolver(
 ).toOpenAPISchema();
 
 const configured = () => {
-  if (!process.env.UNIFI_HOST) {
+  const controller = getWifiController();
+  if (!controller) {
     throw new HTTPException(StatusCodes.SERVICE_UNAVAILABLE, {
-      message: 'UniFi is not configured',
+      message: 'No WiFi controller is configured',
     });
   }
+  return controller;
 };
 
-const serializeSpeedProfile = (profile: UnifiSpeedProfile | undefined) => {
+const serializeSpeedProfile = (profile: WifiSpeedProfile | undefined) => {
   if (!profile) {
     throw new HTTPException(StatusCodes.SERVICE_UNAVAILABLE, {
       message: 'UniFi did not return a speed profile',
@@ -104,7 +103,7 @@ const serializeSpeedProfile = (profile: UnifiSpeedProfile | undefined) => {
   }
   return {
     downloadSpeedMbps: profile.downloadSpeedMbps ?? null,
-    id: profile._id,
+    id: profile.id,
     name: profile.name,
     uploadSpeedMbps: profile.uploadSpeedMbps ?? null,
   };
@@ -464,8 +463,7 @@ export const listWifiSpeedProfilesRoute = wifiFactory.createHandlers(
   }),
   ...authRouter(permissions.wifiRead),
   async (c) => {
-    configured();
-    const profiles = await getSpeedProfiles();
+    const profiles = await configured().getSpeedProfiles();
     return ok(c, {
       profiles: profiles.map(serializeSpeedProfile),
     });
@@ -487,13 +485,9 @@ export const createWifiSpeedProfileRoute = wifiFactory.createHandlers(
   ...authRouter(permissions.wifiWrite),
   zValidator('json', wifiSpeedProfileCreateSchema),
   async (c) => {
-    configured();
+    const controller = configured();
     const payload = c.req.valid('json');
-    const profile = await createSpeedProfile(
-      payload.name,
-      payload.downloadSpeedMbps,
-      payload.uploadSpeedMbps
-    );
+    const profile = await controller.createSpeedProfile(payload);
     return created(c, { profile: serializeSpeedProfile(profile) });
   }
 );
@@ -514,20 +508,23 @@ export const updateWifiSpeedProfileRoute = wifiFactory.createHandlers(
   zValidator('json', wifiSpeedProfileUpdateSchema),
   zValidator('param', wifiIdParamSchema),
   async (c) => {
-    configured();
+    const controller = configured();
     const payload = c.req.valid('json');
-    const current = (await getSpeedProfiles()).find(
-      (speedProfile) => speedProfile._id === c.req.valid('param').id
+    const current = (await controller.getSpeedProfiles()).find(
+      (speedProfile) => speedProfile.id === c.req.valid('param').id
     );
     if (!current) {
       throw notFound('WiFi speed profile not found');
     }
-    const profile = await updateSpeedProfile(
+    const profile = await controller.updateSpeedProfile(
       c.req.valid('param').id,
-      'default',
-      payload.name ?? current.name,
-      payload.downloadSpeedMbps ?? current.downloadSpeedMbps ?? -1,
-      payload.uploadSpeedMbps ?? current.uploadSpeedMbps ?? -1
+      {
+        downloadSpeedMbps:
+          payload.downloadSpeedMbps ?? current.downloadSpeedMbps ?? -1,
+        name: payload.name ?? current.name,
+        uploadSpeedMbps:
+          payload.uploadSpeedMbps ?? current.uploadSpeedMbps ?? -1,
+      }
     );
     return ok(c, { profile: serializeSpeedProfile(profile) });
   }
@@ -543,8 +540,7 @@ export const deleteWifiSpeedProfileRoute = wifiFactory.createHandlers(
   ...authRouter(permissions.wifiWrite),
   zValidator('param', wifiIdParamSchema),
   async (c) => {
-    configured();
-    await deleteSpeedProfile(c.req.valid('param').id);
+    await configured().deleteSpeedProfile(c.req.valid('param').id);
     return ok(c, undefined);
   }
 );

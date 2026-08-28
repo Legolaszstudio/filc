@@ -10,12 +10,13 @@ import { env } from '#utils/environment';
 import { filcExt } from '#utils/openapi';
 import type { RadiusAuthorizeRequest } from '#utils/wifi/radius';
 import { authorizeRadius } from '#utils/wifi/radius';
-import { unifi } from '#utils/wifi/unifi-helpers';
 import { wifiFactory } from './_factory';
 
 const { schema: radiusAuthorizeRequestOpenApiSchema } = await resolver(
   radiusAuthorizeRequestSchema
 ).toOpenAPISchema();
+
+import { getWifiController } from '#utils/wifi/controller';
 
 export const authorizeRadiusRoute = wifiFactory.createHandlers(
   describeRoute({
@@ -59,13 +60,13 @@ export const authorizeRadiusRoute = wifiFactory.createHandlers(
     const result = await authorizeRadius(
       { ...request, sharedSecret } as RadiusAuthorizeRequest,
       {
+        controller: getWifiController() ?? undefined,
         encryptionSecret: env.wifiEncryptionSecret ?? '',
         freeradiusIp: env.freeradiusIp ?? '',
         realIp: env.realIpHeader
           ? c.req.header(env.realIpHeader)
           : getConnInfo(c).remote.address,
         sharedSecret: env.freeradiusSharedSecret ?? '',
-        unifi: process.env.UNIFI_HOST ? unifi : undefined,
       }
     );
 
