@@ -18,9 +18,6 @@ import { user } from './authentication';
 export const wifiUser = pgTable(
   'wifi_user',
   {
-    allowChangePassword: boolean('allow_change_password')
-      .default(true)
-      .notNull(),
     allowedMacAddresses: text('allowed_mac_addresses').array(),
     banned: boolean('banned').default(false).notNull(),
     comment: text('comment'),

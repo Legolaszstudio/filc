@@ -2,8 +2,14 @@ import z from 'zod';
 
 const macAddressSchema = z.string().min(1);
 
+export const wifiIdParamSchema = z.object({ id: z.uuid() });
+export const wifiListQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(100),
+  offset: z.coerce.number().int().min(0).default(0),
+  search: z.string().optional(),
+});
+
 export const wifiUserSchema = z.object({
-  allowChangePassword: z.boolean(),
   allowedMacAddresses: z.array(macAddressSchema).nullable(),
   banned: z.boolean(),
   comment: z.string().nullable(),
@@ -63,7 +69,6 @@ export const wifiUserCreateSchema = z.object({
 });
 
 export const wifiUserUpdateSchema = wifiUserCreateSchema.partial().extend({
-  allowChangePassword: z.boolean().optional(),
   banned: z.boolean().optional(),
 });
 
@@ -104,6 +109,8 @@ export const wifiRoleSpeedProfileCreateSchema = z.object({
 
 export const wifiRoleSpeedProfileUpdateSchema =
   wifiRoleSpeedProfileCreateSchema.partial();
+
+export type WifiListQuery = z.infer<typeof wifiListQuerySchema>;
 
 export type WifiUser = z.infer<typeof wifiUserSchema>;
 export type WifiDevice = z.infer<typeof wifiDeviceSchema>;

@@ -18,12 +18,15 @@ export const wifiSpeedLimitInfoSchema = z.object({
 });
 
 export const wifiSelfSchema = z.object({
-  allowChangePassword: z.boolean(),
   banned: z.boolean(),
   comment: z.string().nullable(),
   devices: z.array(wifiSelfDeviceSchema),
   speedLimit: wifiSpeedLimitInfoSchema,
   username: z.string(),
+});
+
+export const wifiSelfDeviceUpdateSchema = z.object({
+  nickname: z.string().max(100).nullable(),
 });
 
 export type WifiSelf = z.infer<typeof wifiSelfSchema>;

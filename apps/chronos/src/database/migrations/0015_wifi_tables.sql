@@ -51,7 +51,6 @@ CREATE TABLE "wifi_user" (
 	"encrypted_password" text NOT NULL,
 	"salt" text NOT NULL,
 	"banned" boolean DEFAULT false NOT NULL,
-	"allow_change_password" boolean DEFAULT true NOT NULL,
 	"created_by" uuid NOT NULL,
 	"allowed_mac_addresses" text[],
 	"speed_profile_id" text,
