@@ -49,6 +49,7 @@ export const getWifiController = (): WifiController | null => {
       }
       controller = createUnifiController({
         host: env.unifiHost,
+        insecureTls: env.unifiInsecureTls,
         password: env.unifiPassword,
         port: env.unifiPort,
         username: env.unifiUsername,

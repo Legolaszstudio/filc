@@ -12,6 +12,7 @@ const isUnifiConfigured = () => Boolean(process.env.UNIFI_HOST);
 // Initialize directly. We skip explicit connect; it authenticates on first request.
 export const unifi = new UnifiClient({
   baseUrl: `https://${process.env.UNIFI_HOST}:${process.env.UNIFI_PORT}`,
+  insecureTls: process.env.UNIFI_INSECURE_TLS === 'true',
   password: process.env.UNIFI_PASSWORD || '',
   username: process.env.UNIFI_USERNAME || '',
 });

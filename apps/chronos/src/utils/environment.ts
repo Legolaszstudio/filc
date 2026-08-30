@@ -74,6 +74,7 @@ const envSchema = z.object({
   CHRONOS_WIFI_ENABLED: boolean.default(true),
   CHRONOS_WIFI_ENCRYPTION_SECRET: z.string().optional(),
   UNIFI_HOST: z.string().optional(),
+  UNIFI_INSECURE_TLS: boolean.default(false),
   UNIFI_PASSWORD: z.string().optional(),
   UNIFI_PORT: z.coerce.number().min(MIN_PORT).max(MAX_PORT).default(8443),
   UNIFI_USERNAME: z.string().optional(),

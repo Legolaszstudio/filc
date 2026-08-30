@@ -73,6 +73,7 @@ export class UnifiController implements WifiController {
 
 export const createUnifiController = (config: {
   host: string;
+  insecureTls?: boolean;
   password: string;
   port: number;
   username: string;
@@ -80,6 +81,7 @@ export const createUnifiController = (config: {
   new UnifiController(
     new UnifiClient({
       baseUrl: `https://${config.host}:${config.port}`,
+      ...(config.insecureTls ? { insecureTls: true } : {}),
       password: config.password,
       username: config.username,
     })

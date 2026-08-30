@@ -1,6 +1,7 @@
 // unifi-api.ts
 export type UnifiConfig = {
   baseUrl: string;
+  insecureTls?: boolean;
   password: string;
   site?: string;
   username: string;
@@ -47,7 +48,10 @@ export class UnifiClient {
   private isInitialized = false;
 
   constructor(config: UnifiConfig) {
-    this.config = { site: 'default', ...config };
+    this.config = { insecureTls: false, site: 'default', ...config };
+    if (this.config.insecureTls) {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    }
   }
 
   // Probe the controller to determine if it is UniFi OS or Legacy
