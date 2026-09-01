@@ -10,8 +10,8 @@ export type UnifiConfig = {
 export type UnifiSpeedProfile = {
   _id: string;
   name: string;
-  downloadSpeedMbps?: number;
-  uploadSpeedMbps?: number;
+  qos_rate_max_down?: number;
+  qos_rate_max_up?: number;
 };
 
 type UnifiResponse<T> = { data?: T; meta?: { msg?: string; rc?: string } };
@@ -26,6 +26,13 @@ export type UnifiAccessDevice = {
   mac: string;
   name?: string;
   uptime: number;
+};
+
+export type UnifiWlanConf = {
+  _id: string;
+  name: string;
+  usergroup_id?: string;
+  enabled: boolean;
 };
 
 export class UnifiApiError extends Error {
@@ -211,6 +218,9 @@ export class UnifiClient {
   getUserGroups = async (): Promise<UnifiSpeedProfile[]> =>
     this.request(`/api/s/${this.config.site}/rest/usergroup`);
 
+  getWlanConf = async (): Promise<UnifiWlanConf[]> =>
+    this.request(`/api/s/${this.config.site}/rest/wlanconf`);
+
   createUserGroup = async (
     name: string,
     downloadMbps = -1,
@@ -219,8 +229,8 @@ export class UnifiClient {
     this.request(`/api/s/${this.config.site}/rest/usergroup`, {
       body: JSON.stringify({
         name,
-        qos_rate_max_down: downloadMbps,
-        qos_rate_max_up: uploadMbps,
+        qos_rate_max_down: downloadMbps === -1 ? -1 : downloadMbps * 1000,
+        qos_rate_max_up: uploadMbps === -1 ? -1 : uploadMbps * 1000,
       }),
       method: 'POST',
     });
@@ -235,8 +245,8 @@ export class UnifiClient {
     this.request(`/api/s/${siteId}/rest/usergroup/${id}`, {
       body: JSON.stringify({
         name,
-        qos_rate_max_down: downloadMbps,
-        qos_rate_max_up: uploadMbps,
+        qos_rate_max_down: downloadMbps === -1 ? -1 : downloadMbps * 1000,
+        qos_rate_max_up: uploadMbps === -1 ? -1 : uploadMbps * 1000,
       }),
       method: 'PUT',
     });

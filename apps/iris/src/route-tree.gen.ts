@@ -14,6 +14,7 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as PrivateAdminRouteRouteImport } from './routes/_private/admin/route'
 import { Route as PrivateNotificationsRouteImport } from './routes/_private/notifications'
 import { Route as PrivateSettingsRouteImport } from './routes/_private/settings'
+import { Route as PrivateWifiRouteImport } from './routes/_private/wifi'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicSubsRouteImport } from './routes/_public/subs'
 import { Route as PublicUnsubscribeRouteImport } from './routes/_public/unsubscribe'
@@ -56,6 +57,11 @@ const PrivateNotificationsRoute = PrivateNotificationsRouteImport.update({
 const PrivateSettingsRoute = PrivateSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => PrivateRouteRoute,
+} as any)
+const PrivateWifiRoute = PrivateWifiRouteImport.update({
+  id: '/wifi',
+  path: '/wifi',
   getParentRoute: () => PrivateRouteRoute,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
@@ -174,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof PrivateAdminRouteRouteWithChildren
   '/notifications': typeof PrivateNotificationsRoute
   '/settings': typeof PrivateSettingsRoute
+  '/wifi': typeof PrivateWifiRoute
   '/subs': typeof PublicSubsRoute
   '/unsubscribe': typeof PublicUnsubscribeRoute
   '/auth/error': typeof AuthErrorRoute
@@ -199,6 +206,7 @@ export interface FileRoutesByTo {
   '/admin': typeof PrivateAdminRouteRouteWithChildren
   '/notifications': typeof PrivateNotificationsRoute
   '/settings': typeof PrivateSettingsRoute
+  '/wifi': typeof PrivateWifiRoute
   '/subs': typeof PublicSubsRoute
   '/unsubscribe': typeof PublicUnsubscribeRoute
   '/auth/error': typeof AuthErrorRoute
@@ -226,6 +234,7 @@ export interface FileRoutesById {
   '/_private/admin': typeof PrivateAdminRouteRouteWithChildren
   '/_private/notifications': typeof PrivateNotificationsRoute
   '/_private/settings': typeof PrivateSettingsRoute
+  '/_private/wifi': typeof PrivateWifiRoute
   '/_public/subs': typeof PublicSubsRoute
   '/_public/unsubscribe': typeof PublicUnsubscribeRoute
   '/auth/error': typeof AuthErrorRoute
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/notifications'
     | '/settings'
+    | '/wifi'
     | '/subs'
     | '/unsubscribe'
     | '/auth/error'
@@ -279,6 +289,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/notifications'
     | '/settings'
+    | '/wifi'
     | '/subs'
     | '/unsubscribe'
     | '/auth/error'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/_private/admin'
     | '/_private/notifications'
     | '/_private/settings'
+    | '/_private/wifi'
     | '/_public/subs'
     | '/_public/unsubscribe'
     | '/auth/error'
@@ -370,6 +382,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof PrivateSettingsRouteImport
+      parentRoute: typeof PrivateRouteRoute
+    }
+    '/_private/wifi': {
+      id: '/_private/wifi'
+      path: '/wifi'
+      fullPath: '/wifi'
+      preLoaderRoute: typeof PrivateWifiRouteImport
       parentRoute: typeof PrivateRouteRoute
     }
     '/_public/': {
@@ -556,6 +575,7 @@ interface PrivateRouteRouteChildren {
   PrivateAdminRouteRoute: typeof PrivateAdminRouteRouteWithChildren
   PrivateNotificationsRoute: typeof PrivateNotificationsRoute
   PrivateSettingsRoute: typeof PrivateSettingsRoute
+  PrivateWifiRoute: typeof PrivateWifiRoute
   PrivateCardsIndexRoute: typeof PrivateCardsIndexRoute
 }
 
@@ -563,6 +583,7 @@ const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
   PrivateAdminRouteRoute: PrivateAdminRouteRouteWithChildren,
   PrivateNotificationsRoute: PrivateNotificationsRoute,
   PrivateSettingsRoute: PrivateSettingsRoute,
+  PrivateWifiRoute: PrivateWifiRoute,
   PrivateCardsIndexRoute: PrivateCardsIndexRoute,
 }
 

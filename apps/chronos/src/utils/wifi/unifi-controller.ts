@@ -24,11 +24,17 @@ export class UnifiController implements WifiController {
   async getSpeedProfiles(): Promise<WifiSpeedProfile[]> {
     const profiles = await this.client.getUserGroups();
     return profiles.map((profile) => ({
-      downloadSpeedMbps: profile.downloadSpeedMbps ?? null,
+      downloadSpeedMbps: profile.qos_rate_max_down === undefined || profile.qos_rate_max_down === -1 ? null : Math.round(profile.qos_rate_max_down / 1000),
       id: profile._id,
       name: profile.name,
-      uploadSpeedMbps: profile.uploadSpeedMbps ?? null,
+      uploadSpeedMbps: profile.qos_rate_max_up === undefined || profile.qos_rate_max_up === -1 ? null : Math.round(profile.qos_rate_max_up / 1000),
     }));
+  }
+
+  async getWlanDefaultSpeedProfile(ssid: string): Promise<string | null> {
+    const wlans = await this.client.getWlanConf();
+    const wlan = wlans.find((w) => w.name === ssid);
+    return wlan?.usergroup_id ?? null;
   }
 
   async createSpeedProfile(
@@ -40,10 +46,10 @@ export class UnifiController implements WifiController {
       input.uploadSpeedMbps
     );
     return {
-      downloadSpeedMbps: profile.downloadSpeedMbps ?? null,
+      downloadSpeedMbps: profile.qos_rate_max_down === undefined || profile.qos_rate_max_down === -1 ? null : Math.round(profile.qos_rate_max_down / 1000),
       id: profile._id,
       name: profile.name,
-      uploadSpeedMbps: profile.uploadSpeedMbps ?? null,
+      uploadSpeedMbps: profile.qos_rate_max_up === undefined || profile.qos_rate_max_up === -1 ? null : Math.round(profile.qos_rate_max_up / 1000),
     };
   }
 
@@ -59,10 +65,10 @@ export class UnifiController implements WifiController {
       input.uploadSpeedMbps
     );
     return {
-      downloadSpeedMbps: profile.downloadSpeedMbps ?? null,
+      downloadSpeedMbps: profile.qos_rate_max_down === undefined || profile.qos_rate_max_down === -1 ? null : Math.round(profile.qos_rate_max_down / 1000),
       id: profile._id,
       name: profile.name,
-      uploadSpeedMbps: profile.uploadSpeedMbps ?? null,
+      uploadSpeedMbps: profile.qos_rate_max_up === undefined || profile.qos_rate_max_up === -1 ? null : Math.round(profile.qos_rate_max_up / 1000),
     };
   }
 

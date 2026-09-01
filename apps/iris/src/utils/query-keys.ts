@@ -102,4 +102,8 @@ export const queryKeys = {
   },
   users: (page: number, search: string) => ['users', page, search] as const,
   usersAll: () => ['users'] as const,
+  wifi: {
+    self: () => ['wifi', 'self'] as const,
+    status: () => ['wifi', 'status'] as const,
+  },
 };

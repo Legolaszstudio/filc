@@ -19,6 +19,7 @@ export type WifiController = {
   fetchClientHostname(macAddress: string): Promise<string | null>;
   applySpeedProfile(macAddress: string, speedProfileId: string): Promise<void>;
   getSpeedProfiles(): Promise<WifiSpeedProfile[]>;
+  getWlanDefaultSpeedProfile(ssid: string): Promise<string | null>;
   createSpeedProfile(input: WifiSpeedProfileInput): Promise<WifiSpeedProfile>;
   updateSpeedProfile(
     id: string,

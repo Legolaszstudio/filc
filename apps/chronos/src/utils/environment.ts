@@ -70,9 +70,11 @@ const envSchema = z.object({
     (v) => (typeof v === 'string' ? v.split(',').map((s) => s.trim()) : v),
     z.array(z.url()).optional()
   ),
+  CHRONOS_WIFI_CA_CERT_PATH: z.string().optional(),
   CHRONOS_WIFI_CONTROLLER_PROVIDER: z.enum(['none', 'unifi']).default('none'),
   CHRONOS_WIFI_ENABLED: boolean.default(true),
   CHRONOS_WIFI_ENCRYPTION_SECRET: z.string().optional(),
+  CHRONOS_WIFI_SSID: z.string().optional(),
   UNIFI_HOST: z.string().optional(),
   UNIFI_INSECURE_TLS: boolean.default(false),
   UNIFI_PASSWORD: z.string().optional(),

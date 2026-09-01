@@ -126,10 +126,19 @@ export const wifiRoleSpeedProfile = pgTable(
   (t) => [index('wifi_role_speed_profile_role_name_idx').on(t.roleName)]
 );
 
+export const wifiSpeedProfile = pgTable('wifi_speed_profile', {
+  downloadSpeedMbps: integer('download_speed_mbps'),
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  syncedAt: timestamp('synced_at').notNull().defaultNow(),
+  uploadSpeedMbps: integer('upload_speed_mbps'),
+});
+
 export const wifiSchema = {
   wifiAuthLog,
   wifiDevice,
   wifiNas,
   wifiRoleSpeedProfile,
+  wifiSpeedProfile,
   wifiUser,
 };

@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { createFileRoute, Outlet, Navigate } from '@tanstack/react-router';
 import { Spinner } from '@/components/ui/spinner';
 import { authClient } from '@/utils/authentication';
 
@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_private')({
 });
 
 function AppLayoutComponent() {
-  const { isPending } = authClient.useSession();
+  const { isPending, data } = authClient.useSession();
 
   if (isPending) {
     return (
@@ -15,6 +15,10 @@ function AppLayoutComponent() {
         <Spinner />
       </div>
     );
+  }
+
+  if (!data?.session || !data?.user) {
+    return <Navigate to="/auth/login" />;
   }
 
   return <Outlet />;

@@ -113,6 +113,13 @@
       "when": 1787913289418,
       "tag": "0015_wifi_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1788278651038,
+      "tag": "0016_far_firebrand",
+      "breakpoints": true
     }
   ]
 }

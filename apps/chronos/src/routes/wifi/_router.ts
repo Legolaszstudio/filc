@@ -22,12 +22,20 @@ import {
   updateWifiUserRoute,
 } from '#routes/wifi/admin';
 import { authorizeRadiusRoute } from '#routes/wifi/radius';
-import { getSelfWifiRoute, updateSelfWifiDeviceRoute } from '#routes/wifi/self';
+import {
+  createSelfWifiRoute,
+  getSelfWifiCertificateRoute,
+  getSelfWifiRoute,
+  updateSelfWifiDeviceRoute,
+  updateSelfWifiPasswordRoute,
+} from '#routes/wifi/self';
 import { wifiStatsRoute } from '#routes/wifi/stats';
+import { wifiStatusRoute } from '#routes/wifi/status';
 import { env } from '#utils/environment';
 
 export const wifiRouter = wifiFactory
   .createApp()
+  .get('/status', ...wifiStatusRoute)
   .use('*', async (c, next) => {
     if (!env.wifiEnabled) {
       return c.json(
@@ -42,8 +50,11 @@ export const wifiRouter = wifiFactory
     return await next();
   })
   .post('/radius/authorize', ...authorizeRadiusRoute)
+  .post('/self', ...createSelfWifiRoute)
   .get('/self', ...getSelfWifiRoute)
   .put('/self/devices/:id', ...updateSelfWifiDeviceRoute)
+  .put('/self/password', ...updateSelfWifiPasswordRoute)
+  .get('/self/certificate', ...getSelfWifiCertificateRoute)
   .get('/stats/overview', ...wifiStatsRoute)
   .get('/users', ...listWifiUsersRoute)
   .post('/users', ...createWifiUserRoute)

@@ -1,13 +1,15 @@
 import { desc, eq, inArray } from 'drizzle-orm';
 import { db } from '#database';
 import { user } from '#database/schema/authentication';
-import { wifiRoleSpeedProfile, type wifiUser } from '#database/schema/wifi';
+import { wifiRoleSpeedProfile, wifiSpeedProfile, type wifiUser } from '#database/schema/wifi';
 import { SPEED_PROFILE_NONE } from './constants';
 
 export type EffectiveSpeedProfile = {
   roleName: string | null;
   source: 'override' | 'role' | 'wlan_default';
   speedProfileId: string | null;
+  downloadSpeedMbps: number | null;
+  uploadSpeedMbps: number | null;
 };
 
 export const resolveEffectiveSpeedProfile = async (
@@ -17,44 +19,75 @@ export const resolveEffectiveSpeedProfile = async (
   return details.speedProfileId;
 };
 
+const resolveLimits = async (profileId: string | null) => {
+  if (!profileId || profileId === SPEED_PROFILE_NONE) {
+    return { downloadSpeedMbps: null, uploadSpeedMbps: null };
+  }
+  const [profile] = await db
+    .select({
+      down: wifiSpeedProfile.downloadSpeedMbps,
+      up: wifiSpeedProfile.uploadSpeedMbps,
+    })
+    .from(wifiSpeedProfile)
+    .where(eq(wifiSpeedProfile.id, profileId))
+    .limit(1);
+  return {
+    downloadSpeedMbps: profile?.down ?? null,
+    uploadSpeedMbps: profile?.up ?? null,
+  };
+};
+
 export const resolveEffectiveSpeedProfileDetails = async (
   account: typeof wifiUser.$inferSelect
 ): Promise<EffectiveSpeedProfile> => {
-  if (account.speedProfileId === SPEED_PROFILE_NONE) {
-    return { roleName: null, source: 'wlan_default', speedProfileId: null };
-  }
-  if (account.speedProfileId !== null) {
-    return {
-      roleName: null,
-      source: 'override',
-      speedProfileId: account.speedProfileId,
-    };
-  }
-  if (!account.userId) {
-    return { roleName: null, source: 'wlan_default', speedProfileId: null };
-  }
+  let source: EffectiveSpeedProfile['source'] = 'wlan_default';
+  let speedProfileId: string | null = null;
+  let roleName: string | null = null;
 
-  const [filcUser] = await db
-    .select({ roles: user.roles })
-    .from(user)
-    .where(eq(user.id, account.userId))
-    .limit(1);
-  const roles = filcUser?.roles ?? [];
-  if (roles.length === 0) {
-    return { roleName: null, source: 'wlan_default', speedProfileId: null };
-  }
-
-  const mappings = await db
-    .select()
-    .from(wifiRoleSpeedProfile)
-    .where(inArray(wifiRoleSpeedProfile.roleName, roles))
-    .orderBy(desc(wifiRoleSpeedProfile.priority));
-  const mapping = mappings[0];
-  return mapping
-    ? {
-        roleName: mapping.roleName,
-        source: 'role',
-        speedProfileId: mapping.speedProfileId,
+  if (account.speedProfileId && account.speedProfileId !== SPEED_PROFILE_NONE) {
+    source = 'override';
+    speedProfileId = account.speedProfileId;
+  } else if (account.speedProfileId !== SPEED_PROFILE_NONE && account.userId) {
+    const [filcUser] = await db
+      .select({ roles: user.roles })
+      .from(user)
+      .where(eq(user.id, account.userId))
+      .limit(1);
+    
+    if (filcUser?.roles?.length) {
+      const [mapping] = await db
+        .select()
+        .from(wifiRoleSpeedProfile)
+        .where(inArray(wifiRoleSpeedProfile.roleName, filcUser.roles))
+        .orderBy(desc(wifiRoleSpeedProfile.priority))
+        .limit(1);
+      
+      if (mapping) {
+        source = 'role';
+        speedProfileId = mapping.speedProfileId;
+        roleName = mapping.roleName;
       }
-    : { roleName: null, source: 'wlan_default', speedProfileId: null };
+    }
+  }
+
+  // If we fell back to wlan_default, we need to fetch the actual speed profile ID from the controller cache
+  if (source === 'wlan_default') {
+    const { getWifiController } = await import('./controller');
+    const controller = getWifiController();
+    if (controller && process.env.CHRONOS_WIFI_SSID) {
+      const defaultId = await controller.getWlanDefaultSpeedProfile(process.env.CHRONOS_WIFI_SSID);
+      if (defaultId) {
+        speedProfileId = defaultId;
+      }
+    }
+  }
+
+  const limits = await resolveLimits(speedProfileId);
+
+  return {
+    roleName,
+    source,
+    speedProfileId,
+    ...limits,
+  };
 };
