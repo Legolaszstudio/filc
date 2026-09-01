@@ -1,5 +1,5 @@
 {
-  "id": "c38ecca4-4172-499c-8806-e2e2de6e12f7",
+  "id": "31a8f724-0703-4050-a8ed-099a599cc416",
   "prevId": "e9e19c39-eec1-4e1f-b1dc-99a9f100ffb3",
   "version": "7",
   "dialect": "postgresql",
@@ -2962,6 +2962,12 @@
       "name": "wifi_auth_log",
       "schema": "",
       "columns": {
+        "failure_reason": {
+          "name": "failure_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "id": {
           "name": "id",
           "type": "integer",
@@ -2979,32 +2985,20 @@
             "cycle": false
           }
         },
-        "wifi_user_id": {
-          "name": "wifi_user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "username": {
-          "name": "username",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "mac_address": {
           "name": "mac_address",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "nas_mac_address": {
-          "name": "nas_mac_address",
+        "nas_ip_address": {
+          "name": "nas_ip_address",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "nas_ip_address": {
-          "name": "nas_ip_address",
+        "nas_mac_address": {
+          "name": "nas_mac_address",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -3015,18 +3009,24 @@
           "primaryKey": false,
           "notNull": true
         },
-        "failure_reason": {
-          "name": "failure_reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "timestamp": {
           "name": "timestamp",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wifi_user_id": {
+          "name": "wifi_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -3101,39 +3101,8 @@
       "name": "wifi_device",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "mac_address": {
-          "name": "mac_address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "wifi_user_id": {
-          "name": "wifi_user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "nickname": {
-          "name": "nickname",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "admin_notes": {
           "name": "admin_notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "reported_hostname": {
-          "name": "reported_hostname",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -3145,9 +3114,40 @@
           "notNull": true,
           "default": false
         },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
         "last_active_at": {
           "name": "last_active_at",
           "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mac_address": {
+          "name": "mac_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nickname": {
+          "name": "nickname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reported_hostname": {
+          "name": "reported_hostname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wifi_user_id": {
+          "name": "wifi_user_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -3231,6 +3231,12 @@
       "name": "wifi_nas",
       "schema": "",
       "columns": {
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "id": {
           "name": "id",
           "type": "uuid",
@@ -3238,23 +3244,17 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "mac_address": {
-          "name": "mac_address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "ip_address": {
           "name": "ip_address",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "comment": {
-          "name": "comment",
+        "mac_address": {
+          "name": "mac_address",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -3322,6 +3322,13 @@
       "name": "wifi_role_speed_profile",
       "schema": "",
       "columns": {
+        "priority": {
+          "name": "priority",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
         "role_name": {
           "name": "role_name",
           "type": "text",
@@ -3333,25 +3340,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "upload_speed_mbps": {
-          "name": "upload_speed_mbps",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "download_speed_mbps": {
-          "name": "download_speed_mbps",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "priority": {
-          "name": "priority",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
         },
         "created_at": {
           "name": "created_at",
@@ -3385,6 +3373,71 @@
           "with": {}
         }
       },
+      "foreignKeys": {
+        "wifi_role_speed_profile_speed_profile_id_wifi_speed_profile_id_fk": {
+          "name": "wifi_role_speed_profile_speed_profile_id_wifi_speed_profile_id_fk",
+          "tableFrom": "wifi_role_speed_profile",
+          "tableTo": "wifi_speed_profile",
+          "columnsFrom": [
+            "speed_profile_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.wifi_speed_profile": {
+      "name": "wifi_speed_profile",
+      "schema": "",
+      "columns": {
+        "download_speed_mbps": {
+          "name": "download_speed_mbps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "is_wlan_default": {
+          "name": "is_wlan_default",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "synced_at": {
+          "name": "synced_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "upload_speed_mbps": {
+          "name": "upload_speed_mbps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -3396,12 +3449,55 @@
       "name": "wifi_user",
       "schema": "",
       "columns": {
+        "allowed_mac_addresses": {
+          "name": "allowed_mac_addresses",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "banned": {
+          "name": "banned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "encrypted_password": {
+          "name": "encrypted_password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "id": {
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "salt": {
+          "name": "salt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "speed_profile_id": {
+          "name": "speed_profile_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "user_id": {
           "name": "user_id",
@@ -3414,49 +3510,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "encrypted_password": {
-          "name": "encrypted_password",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "salt": {
-          "name": "salt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "banned": {
-          "name": "banned",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "allowed_mac_addresses": {
-          "name": "allowed_mac_addresses",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "speed_profile_id": {
-          "name": "speed_profile_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "comment": {
-          "name": "comment",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         },
         "created_at": {
           "name": "created_at",

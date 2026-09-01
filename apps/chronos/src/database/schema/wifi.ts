@@ -116,11 +116,11 @@ export const wifiAuthLog = pgTable(
 export const wifiRoleSpeedProfile = pgTable(
   'wifi_role_speed_profile',
   {
-    downloadSpeedMbps: integer('download_speed_mbps'),
     priority: integer('priority').default(0).notNull(),
     roleName: text('role_name').primaryKey(),
-    speedProfileId: text('speed_profile_id').notNull(),
-    uploadSpeedMbps: integer('upload_speed_mbps'),
+    speedProfileId: text('speed_profile_id')
+      .notNull()
+      .references(() => wifiSpeedProfile.id, { onDelete: 'cascade' }),
     ...timestamps,
   },
   (t) => [index('wifi_role_speed_profile_role_name_idx').on(t.roleName)]
@@ -129,6 +129,7 @@ export const wifiRoleSpeedProfile = pgTable(
 export const wifiSpeedProfile = pgTable('wifi_speed_profile', {
   downloadSpeedMbps: integer('download_speed_mbps'),
   id: text('id').primaryKey(),
+  isWlanDefault: boolean('is_wlan_default').default(false).notNull(),
   name: text('name').notNull(),
   syncedAt: timestamp('synced_at').notNull().defaultNow(),
   uploadSpeedMbps: integer('upload_speed_mbps'),

@@ -1,7 +1,11 @@
 import { desc, eq, inArray } from 'drizzle-orm';
 import { db } from '#database';
 import { user } from '#database/schema/authentication';
-import { wifiRoleSpeedProfile, wifiSpeedProfile, type wifiUser } from '#database/schema/wifi';
+import {
+  wifiRoleSpeedProfile,
+  wifiSpeedProfile,
+  type wifiUser,
+} from '#database/schema/wifi';
 import { SPEED_PROFILE_NONE } from './constants';
 
 export type EffectiveSpeedProfile = {
@@ -53,7 +57,7 @@ export const resolveEffectiveSpeedProfileDetails = async (
       .from(user)
       .where(eq(user.id, account.userId))
       .limit(1);
-    
+
     if (filcUser?.roles?.length) {
       const [mapping] = await db
         .select()
@@ -61,7 +65,7 @@ export const resolveEffectiveSpeedProfileDetails = async (
         .where(inArray(wifiRoleSpeedProfile.roleName, filcUser.roles))
         .orderBy(desc(wifiRoleSpeedProfile.priority))
         .limit(1);
-      
+
       if (mapping) {
         source = 'role';
         speedProfileId = mapping.speedProfileId;
@@ -72,13 +76,14 @@ export const resolveEffectiveSpeedProfileDetails = async (
 
   // If we fell back to wlan_default, we need to fetch the actual speed profile ID from the controller cache
   if (source === 'wlan_default') {
-    const { getWifiController } = await import('./controller');
-    const controller = getWifiController();
-    if (controller && process.env.CHRONOS_WIFI_SSID) {
-      const defaultId = await controller.getWlanDefaultSpeedProfile(process.env.CHRONOS_WIFI_SSID);
-      if (defaultId) {
-        speedProfileId = defaultId;
-      }
+    const [defaultProfile] = await db
+      .select({ id: wifiSpeedProfile.id })
+      .from(wifiSpeedProfile)
+      .where(eq(wifiSpeedProfile.isWlanDefault, true))
+      .limit(1);
+
+    if (defaultProfile) {
+      speedProfileId = defaultProfile.id;
     }
   }
 
