@@ -11,8 +11,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { useWifiSpeedProfiles } from '@/hooks/wifi-admin';
+import {
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+} from '@/components/ui/dropdown-menu';
 
 export type WifiFilterState = {
+  speedProfileId: string | null;
   bannedOnly: boolean;
   inactiveOnly: boolean;
   activeOnly: boolean;
@@ -21,6 +31,7 @@ export type WifiFilterState = {
 };
 
 export const defaultWifiFilterState: WifiFilterState = {
+  speedProfileId: null,
   activeOnly: false,
   bannedOnly: false,
   inactiveOnly: false,
@@ -34,6 +45,8 @@ type WifiFiltersProps = {
 };
 
 export function WifiFilters({ filters, onChange }: WifiFiltersProps) {
+  const profilesQuery = useWifiSpeedProfiles();
+  const profiles = profilesQuery.data ?? [];
   const { t } = useTranslation();
 
   const handleToggle = (key: keyof WifiFilterState) => {
@@ -137,6 +150,34 @@ export function WifiFilters({ filters, onChange }: WifiFiltersProps) {
             value={filters.minDevices || ''}
           />
         </div>
+      
+        <DropdownMenuSeparator />
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            {t('wifiAdminUsers.speedProfile', 'Speed Profile')}
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuRadioGroup
+                value={filters.speedProfileId ?? 'all'}
+                onValueChange={(v) => onChange({ ...filters, speedProfileId: v === 'all' ? null : v })}
+              >
+                <DropdownMenuRadioItem value="all">
+                  {t('wifiAdminProfiles.all', 'All Profiles')}
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="none">
+                  {t('wifiAdminProfiles.none', 'None (Default)')}
+                </DropdownMenuRadioItem>
+                {profiles.map(p => (
+                  <DropdownMenuRadioItem key={p.id} value={p.id}>
+                    {p.name}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+
       </DropdownMenuContent>
     </DropdownMenu>
   );

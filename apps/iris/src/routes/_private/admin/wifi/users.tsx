@@ -44,6 +44,7 @@ import {
   useDeleteWifiDevice,
   useDeleteWifiUser,
   useWifiDevices,
+  useWifiSpeedProfiles,
   useWifiUsers,
 } from '@/hooks/wifi-admin';
 
@@ -68,6 +69,8 @@ function WifiUsersPage() {
 
   const usersQuery = useWifiUsers({ limit: 10_000, offset: 0 });
   const devicesQuery = useWifiDevices({ limit: 10_000, offset: 0 });
+  const profilesQuery = useWifiSpeedProfiles();
+  const profiles = profilesQuery.data ?? [];
 
   const deleteUserMutation = useDeleteWifiUser();
   const deleteDeviceMutation = useDeleteWifiDevice();
@@ -239,6 +242,15 @@ function WifiUsersPage() {
           keepUser = false;
         }
 
+        if (
+          filters.speedProfileId !== undefined &&
+          filters.speedProfileId !== null &&
+          user.speedProfileId !== (filters.speedProfileId === 'none' ? null : filters.speedProfileId) &&
+          !user.isOrphan
+        ) {
+          keepUser = false;
+        }
+
         return {
           ...user,
           filteredDevices,
@@ -371,6 +383,11 @@ function WifiUsersPage() {
                       </div>
 
                       <div className="flex items-center gap-4 font-normal text-sm">
+                        {!isOrphan && user.speedProfileId && (
+                          <div className="hidden text-muted-foreground sm:flex gap-1 items-center">
+                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5">{profiles.find(p => p.id === user.speedProfileId)?.name ?? user.speedProfileId}</Badge>
+                          </div>
+                        )}
                         {!isOrphan && (
                           <div className="hidden text-muted-foreground sm:flex">
                             {user.devices.length}{' '}

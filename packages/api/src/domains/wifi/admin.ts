@@ -76,6 +76,7 @@ export const wifiUserCreateSchema = z.object({
 
 export const wifiUserUpdateSchema = wifiUserCreateSchema.partial().extend({
   banned: z.boolean().optional(),
+  password: z.union([z.string().min(1), z.literal('')]).optional().transform(v => v === '' ? undefined : v),
 });
 
 export const wifiDeviceCreateSchema = z.object({

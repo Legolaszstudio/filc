@@ -174,6 +174,10 @@ export function WifiUserDialog({
                   {t('wifiAdminUsers.speedProfile', 'Speed Profile')}
                 </FieldLabel>
                 <Select
+                  items={[
+                    { value: 'none', label: t('wifiAdminProfiles.none', 'None') },
+                    ...profiles.map(p => ({ value: p.id, label: p.name }))
+                  ]}
                   onValueChange={(v) =>
                     field.handleChange(v === 'none' ? null : v)
                   }
@@ -182,16 +186,6 @@ export function WifiUserDialog({
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">
-                      {t('wifiAdminProfiles.unlimited', 'Unlimited')}
-                    </SelectItem>
-                    {profiles.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
                 </Select>
               <FieldError errors={field.state.meta.errors} />
               </Field>
