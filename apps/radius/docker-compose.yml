@@ -25,8 +25,11 @@ services:
     restart: always
     env_file:
       - .env
+#    networks:
+#      filc-network:
+#        ipv4_address: 172.18.1.2
 
-networks:
-  default:
-    name: filc-network
-    external: true
+#networks:
+#  default:
+#    name: filc-network
+#    external: true

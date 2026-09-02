@@ -19,12 +19,13 @@ chmod o-w /opt/etc/raddb/mods-available/rest
 ln -s /opt/etc/raddb/mods-available/rest /opt/etc/raddb/mods-enabled/rest || true
 
 # Secure certs
-chmod o-w /opt/etc/raddb/certs/*.pem
-chmod o-w /opt/etc/raddb/certs/*.key
-chmod o-w /opt/etc/raddb/certs/*.p12
-chmod o-w /opt/etc/raddb/certs/*.crt
-chmod o-w /opt/etc/raddb/certs/*.csr
-chmod o-w /opt/etc/raddb/certs/dh
+chmod o-w /opt/etc/raddb/certs
+chmod o-w /opt/etc/raddb/certs/*.pem || true
+chmod o-w /opt/etc/raddb/certs/*.key || true
+chmod o-w /opt/etc/raddb/certs/*.p12 || true
+chmod o-w /opt/etc/raddb/certs/*.crt || true
+chmod o-w /opt/etc/raddb/certs/*.csr || true
+chmod o-w /opt/etc/raddb/certs/dh || true
 
 # Remove unused modules if exist
 rm /opt/etc/raddb/mods-enabled/files || true
