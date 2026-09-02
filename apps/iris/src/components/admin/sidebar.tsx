@@ -6,7 +6,9 @@ import {
   Bell,
   Bug,
   DoorOpen,
+  Gauge,
   GraduationCap,
+  HardDrive,
   IdCard,
   LayoutDashboard,
   List,
@@ -14,6 +16,7 @@ import {
   RefreshCw,
   Shield,
   Users,
+  Wifi,
 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -139,6 +142,35 @@ export function AdminSidebar() {
           },
         ],
         label: t('admin.doorlock'),
+      },
+      {
+        items: [
+          {
+            icon: Wifi,
+            permission: permissions.wifiRead,
+            title: t('wifiAdminDashboard.title'),
+            url: '/admin/wifi',
+          },
+          {
+            icon: Users,
+            permission: permissions.wifiRead,
+            title: t('wifiAdminUsers.title'),
+            url: '/admin/wifi/users',
+          },
+          {
+            icon: HardDrive,
+            permission: permissions.wifiRead,
+            title: t('wifiAdminNas.title'),
+            url: '/admin/wifi/nas',
+          },
+          {
+            icon: Gauge,
+            permission: permissions.wifiRead,
+            title: t('wifiAdminProfiles.title'),
+            url: '/admin/wifi/speed-profiles',
+          },
+        ],
+        label: t('admin.wifi'),
       },
       {
         items: [

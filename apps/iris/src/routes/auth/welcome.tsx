@@ -1,6 +1,13 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import type { InferResponseType } from 'hono/client';
-import { Check, ChevronDown, CircleCheck, Mail, User, Wifi } from 'lucide-react';
+import {
+  Check,
+  ChevronDown,
+  CircleCheck,
+  Mail,
+  User,
+  Wifi,
+} from 'lucide-react';
 import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -109,7 +116,7 @@ const WelcomeStepper = ({ user }: { user: UserType }) => {
   const [selectedCohortId, setSelectedCohortId] = useState<string | null>(
     user.cohortId ?? null
   );
-  
+
   const wifiStatus = useWifiStatus();
   const showWifiStep = wifiStatus.data?.enabled === true;
 
@@ -301,13 +308,18 @@ const WelcomeStepper = ({ user }: { user: UserType }) => {
                 {t('welcome.wifiDescription')}
               </p>
               <Card className="mb-1 shadow-sm">
-                 <CardContent className="pt-6 text-center">
-                    <Wifi className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                    <p className="mb-4">{t('welcome.wifiPrompt')}</p>
-                    <Button onClick={() => { window.open('/wifi', '_blank') }} variant="outline">
-                       {t('wifi.goToSetup')}
-                    </Button>
-                 </CardContent>
+                <CardContent className="pt-6 text-center">
+                  <Wifi className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                  <p className="mb-4">{t('welcome.wifiPrompt')}</p>
+                  <Button
+                    onClick={() => {
+                      window.open('/wifi', '_blank');
+                    }}
+                    variant="outline"
+                  >
+                    {t('wifi.goToSetup')}
+                  </Button>
+                </CardContent>
               </Card>
             </div>
           </Step>

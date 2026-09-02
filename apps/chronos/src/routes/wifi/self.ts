@@ -44,7 +44,11 @@ const { schema: wifiSelfCreateResponseOpenApiSchema } = await resolver(
 ).toOpenAPISchema();
 
 const findAccount = async (userId: string, email?: string | null) => {
-  let [account] = await db.select().from(wifiUser).where(eq(wifiUser.userId, userId)).limit(1);
+  let [account] = await db
+    .select()
+    .from(wifiUser)
+    .where(eq(wifiUser.userId, userId))
+    .limit(1);
   if (!account && email) {
     const [unlinked] = await db
       .select()
@@ -171,7 +175,9 @@ export const getSelfWifiRoute = wifiFactory.createHandlers(
   }),
   ...authRouter(),
   async (c) => {
-    const account = (await findAccount(c.var.session.userId, c.var.user?.email))[0];
+    const account = (
+      await findAccount(c.var.session.userId, c.var.user?.email)
+    )[0];
     if (!account) {
       throw notFound('WiFi account not found');
     }
@@ -226,7 +232,9 @@ export const updateSelfWifiDeviceRoute = wifiFactory.createHandlers(
   async (c) => {
     const { id } = c.req.valid('param');
     const { nickname } = c.req.valid('json');
-    const account = (await findAccount(c.var.session.userId, c.var.user?.email))[0];
+    const account = (
+      await findAccount(c.var.session.userId, c.var.user?.email)
+    )[0];
     if (!account) {
       throw notFound('WiFi account not found');
     }
@@ -271,7 +279,9 @@ export const updateSelfWifiPasswordRoute = wifiFactory.createHandlers(
   zValidator('json', wifiSelfPasswordChangeSchema),
   async (c) => {
     const { newPassword } = c.req.valid('json');
-    const account = (await findAccount(c.var.session.userId, c.var.user?.email))[0];
+    const account = (
+      await findAccount(c.var.session.userId, c.var.user?.email)
+    )[0];
     if (!account) {
       throw notFound('WiFi account not found');
     }
@@ -315,7 +325,9 @@ export const getSelfWifiCertificateRoute = wifiFactory.createHandlers(
   }),
   ...authRouter(),
   async (c) => {
-    const account = (await findAccount(c.var.session.userId, c.var.user?.email))[0];
+    const account = (
+      await findAccount(c.var.session.userId, c.var.user?.email)
+    )[0];
     if (!account) {
       throw notFound('WiFi account not found');
     }

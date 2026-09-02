@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, Navigate } from '@tanstack/react-router';
+import { createFileRoute, Navigate, Outlet } from '@tanstack/react-router';
 import { Spinner } from '@/components/ui/spinner';
 import { authClient } from '@/utils/authentication';
 
@@ -17,7 +17,7 @@ function AppLayoutComponent() {
     );
   }
 
-  if (!data?.session || !data?.user) {
+  if (!(data?.session && data?.user)) {
     return <Navigate to="/auth/login" />;
   }
 

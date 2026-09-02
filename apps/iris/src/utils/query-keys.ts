@@ -103,6 +103,20 @@ export const queryKeys = {
   users: (page: number, search: string) => ['users', page, search] as const,
   usersAll: () => ['users'] as const,
   wifi: {
+    admin: {
+      devices: (query: {
+        limit?: number;
+        offset?: number;
+        search?: string;
+        wifiUserId?: string | null;
+      }) => ['wifi', 'admin', 'devices', query] as const,
+      nas: () => ['wifi', 'admin', 'nas'] as const,
+      roleProfiles: () => ['wifi', 'admin', 'roleProfiles'] as const,
+      speedProfiles: () => ['wifi', 'admin', 'speedProfiles'] as const,
+      stats: () => ['wifi', 'admin', 'stats'] as const,
+      users: (query: { limit?: number; offset?: number; search?: string }) =>
+        ['wifi', 'admin', 'users', query] as const,
+    },
     self: () => ['wifi', 'self'] as const,
     status: () => ['wifi', 'status'] as const,
   },

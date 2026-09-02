@@ -11,19 +11,24 @@ import { ok } from '#utils/http';
 import { filcExt } from '#utils/openapi';
 import { wifiFactory } from './_factory';
 
+const response = (
+  schema: Parameters<typeof resolver>[0],
+  description: string
+) => ({
+  200: {
+    content: {
+      'application/json': { schema: resolver(schema) },
+    },
+    description,
+  },
+});
+
 export const wifiStatsRoute = wifiFactory.createHandlers(
   describeRoute({
     ...filcExt('WiFi', '@unit WifiStatsResponse @field(.stats, WifiStats)'),
     description:
       'Get WiFi account, device, active-device, and auth statistics.',
-    responses: {
-      200: {
-        content: {
-          'application/json': { schema: resolver(wifiStatsOverviewSchema) },
-        },
-        description: 'WiFi statistics',
-      },
-    },
+    responses: response(wifiStatsOverviewSchema, 'WiFi statistics'),
     tags: ['WiFi'],
   }),
   ...authRouter('wifi:read'),
@@ -65,6 +70,6 @@ export const wifiStatsRoute = wifiFactory.createHandlers(
       totalDevices: Number(devices[0]?.count ?? 0),
       totalUsers: Number(users[0]?.count ?? 0),
     };
-    return ok(c, { stats });
+    return ok(c, stats);
   }
 );

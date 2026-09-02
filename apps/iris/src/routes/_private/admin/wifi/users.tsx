@@ -1,0 +1,578 @@
+import type { WifiDevice, WifiUser } from '@filcdev/api/domains/wifi/admin';
+import { createFileRoute } from '@tanstack/react-router';
+import { differenceInDays } from 'date-fns';
+import {
+  AlertTriangle,
+  Monitor,
+  Pencil,
+  Plus,
+  RefreshCw,
+  Search,
+  ShieldAlert,
+  Trash,
+  Users,
+} from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { RelativeTime } from '@/components/wifi/relative-time';
+import {
+  WifiDeviceDialog,
+  WifiUserDialog,
+} from '@/components/wifi/wifi-dialogs';
+import {
+  defaultWifiFilterState,
+  type WifiFilterState,
+  WifiFilters,
+} from '@/components/wifi/wifi-filters';
+import {
+  useDeleteWifiDevice,
+  useDeleteWifiUser,
+  useWifiDevices,
+  useWifiUsers,
+} from '@/hooks/wifi-admin';
+
+export const Route = createFileRoute('/_private/admin/wifi/users')({
+  component: WifiUsersPage,
+});
+
+function WifiUsersPage() {
+  const { t } = useTranslation();
+  const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState<WifiFilterState>(
+    defaultWifiFilterState
+  );
+
+  const [isUserOpen, setIsUserOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<WifiUser | undefined>();
+
+  const [isDeviceOpen, setIsDeviceOpen] = useState(false);
+  const [editingDevice, setEditingDevice] = useState<WifiDevice | undefined>();
+  const [targetUserId, setTargetUserId] = useState<string | null>(null);
+  const [expandedUsers, setExpandedUsers] = useState<Record<string, boolean>>({});
+
+  const usersQuery = useWifiUsers({ limit: 10_000, offset: 0 });
+  const devicesQuery = useWifiDevices({ limit: 10_000, offset: 0 });
+
+  const deleteUserMutation = useDeleteWifiUser();
+  const deleteDeviceMutation = useDeleteWifiDevice();
+
+  const handleEditUser = (user: WifiUser) => {
+    setEditingUser(user);
+    setIsUserOpen(true);
+  };
+
+  const handleCreateUser = () => {
+    setEditingUser(undefined);
+    setIsUserOpen(true);
+  };
+
+  const handleDeleteUser = (user: WifiUser) => {
+    if (window.confirm(t('wifiAdminUsers.deleteConfirmTitle', 'Delete User'))) {
+      deleteUserMutation.mutate(user.id);
+    }
+  };
+
+  const handleEditDevice = (device: WifiDevice) => {
+    setEditingDevice(device);
+    setIsDeviceOpen(true);
+  };
+
+  const handleCreateDevice = (userId: string | null) => {
+    setTargetUserId(userId);
+    setEditingDevice(undefined);
+    setIsDeviceOpen(true);
+  };
+
+  const handleDeleteDevice = (device: WifiDevice) => {
+    if (
+      window.confirm(
+        t('wifiAdminUsers.deleteDeviceConfirmTitle', 'Delete Device')
+      )
+    ) {
+      deleteDeviceMutation.mutate(device.id);
+    }
+  };
+
+  const users = usersQuery.data ?? [];
+  const allDevices = devicesQuery.data ?? [];
+
+  const { combined, macCounts } = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const d of allDevices) {
+      const mac = d.macAddress.toLowerCase();
+      counts.set(mac, (counts.get(mac) ?? 0) + 1);
+    }
+
+    const devicesByUserId = new Map<string | null, WifiDevice[]>();
+    for (const d of allDevices) {
+      const uid = d.wifiUserId;
+      if (!devicesByUserId.has(uid)) {
+        devicesByUserId.set(uid, []);
+      }
+      devicesByUserId.get(uid)?.push(d);
+    }
+
+    const result = users.map((u) => ({
+      ...u,
+      devices: devicesByUserId.get(u.id) ?? [],
+      isOrphan: false,
+    }));
+
+    const orphans = devicesByUserId.get(null) ?? [];
+    if (orphans.length > 0) {
+      result.push({
+        allowedMacAddresses: null,
+        banned: false,
+        comment: t(
+          'wifiAdminUsers.orphanDevicesDescription',
+          'Devices not linked to any specific user.'
+        ),
+        createdAt: new Date().toISOString(),
+        createdBy: '',
+        devices: orphans,
+        id: 'orphan',
+        isOrphan: true,
+        lastActiveAt: null,
+        speedProfileId: null,
+        updatedAt: new Date().toISOString(),
+        userId: null,
+        username: t(
+          'wifiAdminUsers.orphanDevices',
+          'Orphan Devices & MAC Bans'
+        ),
+      });
+    }
+
+    return { combined: result, macCounts: counts };
+  }, [allDevices, users, t]);
+
+  const filteredData = useMemo(() => {
+    const s = search.toLowerCase();
+
+    return combined
+      .map((user) => {
+        let keepUser = true;
+
+        const userMatchesSearch =
+          !s ||
+          user.username.toLowerCase().includes(s) ||
+          (user.comment?.toLowerCase() || '').includes(s);
+
+        const filteredDevices = user.devices.filter((d) => {
+          if (
+            s &&
+            !userMatchesSearch &&
+            !(
+              d.macAddress.toLowerCase().includes(s) ||
+              (d.nickname?.toLowerCase() || '').includes(s)
+            )
+          ) {
+            return false;
+          }
+
+          if (filters.bannedOnly && !d.banned && !user.banned) {
+            return false;
+          }
+
+          if (filters.inactiveOnly) {
+            if (!d.lastActiveAt) {
+              return false;
+            }
+            const diff = differenceInDays(new Date(), new Date(d.lastActiveAt));
+            if (diff <= 45) {
+              return false;
+            }
+          }
+
+          if (filters.activeOnly) {
+            if (!d.lastActiveAt) {
+              return false;
+            }
+            const diff = differenceInDays(new Date(), new Date(d.lastActiveAt));
+            if (diff > 45) {
+              return false;
+            }
+          }
+
+          if (filters.sharedMacsOnly) {
+            const count = macCounts.get(d.macAddress.toLowerCase()) ?? 1;
+            if (count <= 1) {
+              return false;
+            }
+          }
+
+          return true;
+        });
+
+        if (s && !userMatchesSearch && filteredDevices.length === 0) {
+          keepUser = false;
+        }
+
+        if (
+          filters.bannedOnly &&
+          !user.banned &&
+          filteredDevices.length === 0
+        ) {
+          keepUser = false;
+        }
+
+        if (
+          filters.minDevices > 0 &&
+          user.devices.length < filters.minDevices
+        ) {
+          keepUser = false;
+        }
+
+        return {
+          ...user,
+          filteredDevices,
+          keepUser,
+        };
+      })
+      .filter(
+        (u) =>
+          u.keepUser &&
+          (u.filteredDevices.length > 0 ||
+            !s ||
+            u.username.toLowerCase().includes(s))
+      );
+  }, [combined, search, filters, macCounts]);
+
+  const isLoading = usersQuery.isFetching || devicesQuery.isFetching;
+
+  return (
+    <div className="flex h-full flex-col gap-6 p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-bold text-3xl tracking-tight">
+            {t('wifiAdminUsers.title')}
+          </h1>
+          <p className="text-muted-foreground">
+            {t('wifiAdminUsers.description')}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            disabled={isLoading}
+            onClick={() => {
+              usersQuery.refetch();
+              devicesQuery.refetch();
+            }}
+            size="icon"
+            variant="outline"
+          >
+            <RefreshCw
+              className={isLoading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'}
+            />
+          </Button>
+          <Button className="gap-2" onClick={handleCreateUser}>
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">
+              {t('wifiAdminUsers.addUser')}
+            </span>
+          </Button>
+          <Button
+            className="gap-2"
+            onClick={() => handleCreateDevice(null)}
+            variant="outline"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">
+              {t('wifiAdminUsers.addDevice')}
+            </span>
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative min-w-[200px] max-w-sm flex-1">
+          <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            className="pl-9"
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('wifiAdminUsers.searchPlaceholder')}
+            value={search}
+          />
+        </div>
+        <WifiFilters filters={filters} onChange={setFilters} />
+      </div>
+
+      <div className="rounded-md border bg-card">
+        {filteredData.length === 0 ? (
+          <div className="p-8 text-center text-muted-foreground">
+            {isLoading
+              ? 'Loading...'
+              : t(
+                  'wifiAdminUsers.noUsersFound',
+                  'No accounts or devices found.'
+                )}
+          </div>
+        ) : (
+          <div className="flex w-full flex-col">
+            {filteredData.map((user) => {
+              const isOrphan = user.isOrphan;
+
+              const isUserInactive =
+                user.lastActiveAt &&
+                differenceInDays(new Date(), new Date(user.lastActiveAt)) > 45;
+
+              return (
+                <Collapsible
+                  className="border-b px-4 py-2 last:border-b-0"
+                  key={user.id}
+                  open={!!expandedUsers[user.id]}
+                >
+                  <CollapsibleTrigger
+                    className="flex w-full cursor-pointer items-center justify-between py-2 hover:no-underline"
+                    onClick={() => setExpandedUsers(prev => ({ ...prev, [user.id]: !prev[user.id] }))}
+                  >
+                    <div className="flex w-full items-center justify-between pr-4">
+                      <div className="flex items-center gap-4 text-left">
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-semibold">{user.username}</span>
+                          {user.banned && (
+                            <Badge variant="destructive">
+                              {t('wifiAdminUsers.banned', 'Banned')}
+                            </Badge>
+                          )}
+                          {isUserInactive && !isOrphan && (
+                            <Badge
+                              className="border-amber-500 text-amber-500"
+                              variant="outline"
+                            >
+                              {t('wifiAdminUsers.inactiveWarning', 'Inactive')}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="hidden text-muted-foreground text-sm md:flex">
+                          {user.comment && (
+                            <span className="max-w-[200px] truncate">
+                              {user.comment}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4 font-normal text-sm">
+                        {!isOrphan && (
+                          <div className="hidden text-muted-foreground sm:flex">
+                            {user.devices.length}{' '}
+                            {t('wifiAdminUsers.devices', 'Devices')}
+                          </div>
+                        )}
+                        {!isOrphan && (
+                          <div className="w-[140px] text-right">
+                            <RelativeTime date={user.lastActiveAt} />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="flex flex-col gap-4 py-2">
+                      {!isOrphan && (
+                        <div className="flex items-center justify-between border-b pb-4">
+                          <div className="flex gap-4 text-muted-foreground text-sm">
+                            {user.speedProfileId && (
+                              <span>
+                                {t(
+                                  'wifiAdminUsers.speedProfile',
+                                  'Speed Profile'
+                                )}
+                                :{' '}
+                                <Badge variant="secondary">
+                                  {user.speedProfileId}
+                                </Badge>
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => handleEditUser(user as WifiUser)}
+                              size="sm"
+                              variant="outline"
+                            >
+                              <Pencil className="mr-2 h-4 w-4" />
+                              {t('wifiAdminUsers.editUser', 'Edit')}
+                            </Button>
+                            <Button
+                              onClick={() => handleCreateDevice(user.id)}
+                              size="sm"
+                              variant="outline"
+                            >
+                              <Plus className="mr-2 h-4 w-4" />
+                              {t('wifiAdminUsers.addDevice', 'Add Device')}
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteUser(user as WifiUser)}
+                              size="sm"
+                              variant="destructive"
+                            >
+                              <Trash className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {user.filteredDevices.length > 0 ? (
+                        <div className="rounded-md border">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>
+                                  {t('wifiAdminUsers.deviceMac', 'MAC Address')}
+                                </TableHead>
+                                <TableHead>
+                                  {t(
+                                    'wifiAdminUsers.deviceNickname',
+                                    'Nickname'
+                                  )}
+                                </TableHead>
+                                <TableHead>
+                                  {t(
+                                    'wifiAdminUsers.lastActive',
+                                    'Last Active'
+                                  )}
+                                </TableHead>
+                                <TableHead>
+                                  {t('wifiAdminUsers.status', 'Status')}
+                                </TableHead>
+                                <TableHead className="w-[100px] text-right">
+                                  {t('wifiAdminUsers.actions', 'Actions')}
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {user.filteredDevices.map((d) => {
+                                const macCount =
+                                  macCounts.get(d.macAddress.toLowerCase()) ??
+                                  1;
+                                const isShared = macCount > 1;
+
+                                return (
+                                  <TableRow key={d.id}>
+                                    <TableCell className="font-mono">
+                                      <div className="flex items-center gap-2">
+                                        <Monitor className="h-4 w-4 text-muted-foreground" />
+                                        {d.macAddress}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="flex flex-col">
+                                        <span>{d.nickname ?? '-'}</span>
+                                        {d.adminNotes && (
+                                          <span className="max-w-[150px] truncate text-muted-foreground text-xs">
+                                            {d.adminNotes}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <RelativeTime date={d.lastActiveAt} />
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="flex flex-col items-start gap-1">
+                                        {d.banned && (
+                                          <Badge
+                                            className="h-4 py-1 text-[10px] leading-none"
+                                            variant="destructive"
+                                          >
+                                            <ShieldAlert className="mr-1 h-3 w-3" />
+                                            {t(
+                                              'wifiAdminUsers.banned',
+                                              'Banned'
+                                            )}
+                                          </Badge>
+                                        )}
+                                        {isShared && (
+                                          <Badge
+                                            className="h-4 border-amber-500 py-1 text-[10px] text-amber-500 leading-none"
+                                            title={t(
+                                              'wifiAdminUsers.macUsedMultipleTimes'
+                                            )}
+                                            variant="outline"
+                                          >
+                                            <AlertTriangle className="mr-1 h-3 w-3" />
+                                            {macCount}x
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      <div className="flex justify-end gap-2">
+                                        <Button
+                                          onClick={() => handleEditDevice(d)}
+                                          size="icon"
+                                          variant="ghost"
+                                        >
+                                          <Pencil className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                          className="text-destructive"
+                                          onClick={() => handleDeleteDevice(d)}
+                                          size="icon"
+                                          variant="ghost"
+                                        >
+                                          <Trash className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      ) : (
+                        <div className="py-4 text-center text-muted-foreground text-sm">
+                          {t(
+                            'wifiAdminUsers.noDevicesFound',
+                            'No devices found.'
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {isUserOpen && (
+        <WifiUserDialog
+          onOpenChange={setIsUserOpen}
+          open={isUserOpen}
+          user={editingUser}
+        />
+      )}
+
+      {isDeviceOpen && (
+        <WifiDeviceDialog
+          device={editingDevice}
+          onOpenChange={setIsDeviceOpen}
+          open={isDeviceOpen}
+          wifiUserId={targetUserId}
+        />
+      )}
+    </div>
+  );
+}

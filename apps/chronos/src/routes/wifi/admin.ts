@@ -127,7 +127,7 @@ export const listWifiUsersRoute = wifiFactory.createHandlers(
       .orderBy(desc(wifiUser.createdAt))
       .limit(limit)
       .offset(offset);
-    return ok(c, { users });
+    return ok(c, users);
   }
 );
 
@@ -235,7 +235,7 @@ export const updateWifiUserRoute = wifiFactory.createHandlers(
     if (!user) {
       throw notFound('WiFi user not found');
     }
-    return ok(c, { user });
+    return ok(c, user);
   }
 );
 
@@ -278,7 +278,7 @@ export const listWifiDevicesRoute = wifiFactory.createHandlers(
       .orderBy(desc(wifiDevice.updatedAt))
       .limit(limit)
       .offset(offset);
-    return ok(c, { devices });
+    return ok(c, devices);
   }
 );
 
@@ -338,7 +338,7 @@ export const updateWifiDeviceRoute = wifiFactory.createHandlers(
     if (!device) {
       throw notFound('WiFi device not found');
     }
-    return ok(c, { device });
+    return ok(c, device);
   }
 );
 
@@ -372,9 +372,7 @@ export const listWifiNasRoute = wifiFactory.createHandlers(
   }),
   ...authRouter(permissions.wifiRead),
   async (c) =>
-    ok(c, {
-      nas: await db.select().from(wifiNas).orderBy(desc(wifiNas.updatedAt)),
-    })
+    ok(c, await db.select().from(wifiNas).orderBy(desc(wifiNas.updatedAt)))
 );
 
 export const createWifiNasRoute = wifiFactory.createHandlers(
@@ -429,7 +427,7 @@ export const updateWifiNasRoute = wifiFactory.createHandlers(
     if (!nas) {
       throw notFound('WiFi NAS not found');
     }
-    return ok(c, { nas });
+    return ok(c, nas);
   }
 );
 
@@ -464,9 +462,7 @@ export const listWifiSpeedProfilesRoute = wifiFactory.createHandlers(
   ...authRouter(permissions.wifiRead),
   async (c) => {
     const profiles = await configured().getSpeedProfiles();
-    return ok(c, {
-      profiles: profiles.map(serializeSpeedProfile),
-    });
+    return ok(c, profiles.map(serializeSpeedProfile));
   }
 );
 
@@ -526,7 +522,7 @@ export const updateWifiSpeedProfileRoute = wifiFactory.createHandlers(
           payload.uploadSpeedMbps ?? current.uploadSpeedMbps ?? -1,
       }
     );
-    return ok(c, { profile: serializeSpeedProfile(profile) });
+    return ok(c, serializeSpeedProfile(profile));
   }
 );
 
@@ -554,12 +550,13 @@ export const listWifiRoleProfilesRoute = wifiFactory.createHandlers(
   }),
   ...authRouter(permissions.wifiRead),
   async (c) =>
-    ok(c, {
-      mappings: await db
+    ok(
+      c,
+      await db
         .select()
         .from(wifiRoleSpeedProfile)
-        .orderBy(desc(wifiRoleSpeedProfile.priority)),
-    })
+        .orderBy(desc(wifiRoleSpeedProfile.priority))
+    )
 );
 
 export const createWifiRoleProfileRoute = wifiFactory.createHandlers(
@@ -615,7 +612,7 @@ export const updateWifiRoleProfileRoute = wifiFactory.createHandlers(
     if (!mapping) {
       throw notFound('WiFi role mapping not found');
     }
-    return ok(c, { mapping });
+    return ok(c, mapping);
   }
 );
 

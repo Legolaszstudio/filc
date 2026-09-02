@@ -1,8 +1,8 @@
 import { getLogger } from '@logtape/logtape';
+import { captureException } from '@sentry/bun';
+import { lte } from 'drizzle-orm';
 import { db } from '#database';
 import { wifiAuthLog } from '#database/schema/wifi';
-import { lte } from 'drizzle-orm';
-import { captureException } from '@sentry/bun';
 
 const logger = getLogger(['chronos', 'wifi', 'cleanup']);
 
@@ -23,4 +23,3 @@ export async function cleanUpWifiAuthLogs() {
     captureException(error);
   }
 }
-

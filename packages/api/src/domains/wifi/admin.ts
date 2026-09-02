@@ -1,12 +1,17 @@
 import z from 'zod';
 
-const macAddressSchema = z.string().min(1);
+const macRegex = /^([0-9a-fA-F]{2}[:-]){5}([0-9a-fA-F]{2})$/i;
+const macAddressSchema = z.string().regex(macRegex, 'Invalid MAC address');
 
 export const wifiIdParamSchema = z.object({ id: z.uuid() });
 export const wifiListQuerySchema = z.object({
-  limit: z.coerce.number().int().min(1).max(100).default(100),
+  limit: z.coerce.number().int().min(1).max(10_000).default(10_000),
   offset: z.coerce.number().int().min(0).default(0),
   search: z.string().optional(),
+});
+
+export const wifiDeviceListQuerySchema = wifiListQuerySchema.extend({
+  wifiUserId: z.string().nullable().optional(),
 });
 
 export const wifiUserSchema = z.object({
@@ -16,6 +21,7 @@ export const wifiUserSchema = z.object({
   createdAt: z.iso.datetime(),
   createdBy: z.uuid(),
   id: z.uuid(),
+  lastActiveAt: z.iso.datetime().nullable(),
   speedProfileId: z.string().nullable(),
   updatedAt: z.iso.datetime(),
   userId: z.uuid().nullable(),
@@ -111,8 +117,10 @@ export const wifiRoleSpeedProfileUpdateSchema =
   wifiRoleSpeedProfileCreateSchema.partial();
 
 export type WifiListQuery = z.infer<typeof wifiListQuerySchema>;
+export type WifiDeviceListQuery = z.infer<typeof wifiDeviceListQuerySchema>;
 
 export type WifiUser = z.infer<typeof wifiUserSchema>;
 export type WifiDevice = z.infer<typeof wifiDeviceSchema>;
 export type WifiNas = z.infer<typeof wifiNasSchema>;
 export type WifiSpeedProfile = z.infer<typeof wifiSpeedProfileSchema>;
+export type WifiRoleSpeedProfile = z.infer<typeof wifiRoleSpeedProfileSchema>;
