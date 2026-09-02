@@ -6,20 +6,20 @@ rest {
 	}
 
 	# Points to the Chronos backend API
-	connect_uri = "http://chronos:3000"
+	connect_uri = "http://chronos:3000/api/wifi"
 
 	authorize {
 		uri = "${..connect_uri}/radius/authorize"
 		method = 'post'
 		body = 'JSON'
-		data = '{"username": "%{User-Name}", "password": "%{User-Password}", "source": "%{Calling-Station-Id}", "destination": "%{Called-Station-Id}", "NAS": "%{NAS-Identifier}", "IP": "%{NAS-IP-Address}", "sharedSecret": "%{ENV:FREERADIUS_SHARED_SECRET}"}'
+		data = '{"username": "%{User-Name}", "password": "%{User-Password}", "source": "%{Calling-Station-Id}", "destination": "%{Called-Station-Id}", "NAS": "%{NAS-Identifier}", "IP": "%{NAS-IP-Address}", "sharedSecret": "SECRET_HERE"}'
 		tls = ${..tls}
 	}
 	authenticate {
 		uri = "${..connect_uri}/radius/authenticate"
 		method = 'post'
 		body = 'JSON'
-		data = '{"username": "%{User-Name}", "password": "%{User-Password}", "source": "%{Calling-Station-Id}", "destination": "%{Called-Station-Id}", "NAS": "%{NAS-Identifier}", "IP": "%{NAS-IP-Address}", "sharedSecret": "%{ENV:FREERADIUS_SHARED_SECRET}"}'
+		data = '{"username": "%{User-Name}", "password": "%{User-Password}", "source": "%{Calling-Station-Id}", "destination": "%{Called-Station-Id}", "NAS": "%{NAS-Identifier}", "IP": "%{NAS-IP-Address}", "sharedSecret": "SECRET_HERE"}'
 		tls = ${..tls}
 	}
 	preacct {

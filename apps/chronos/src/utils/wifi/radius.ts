@@ -1,5 +1,9 @@
+import { getLogger } from '@logtape/logtape';
 import { and, eq } from 'drizzle-orm';
 import { db } from '#database';
+
+const logger = getLogger(['chronos', 'wifi', 'radius']);
+
 import {
   wifiAuthLog,
   wifiDevice,
@@ -81,6 +85,9 @@ const validateRequestSource = async (
 ): Promise<RadiusAuthorizeResult | null> => {
   if (request.username === RADIUS_HEALTH_USERNAME) {
     if (request.source !== '02-00-00-00-00-01' || request.IP !== '127.0.0.1') {
+      logger.warn('Radius health check forbidden source {source}', {
+        source: request.source,
+      });
       await log(false, 'forbidden_source');
       return reject(
         403,
@@ -91,6 +98,10 @@ const validateRequestSource = async (
     return null;
   }
   if (options.realIp !== options.freeradiusIp) {
+    logger.warn(
+      'Radius request from untrusted IP {ip} (expected {freeradiusIp})',
+      { freeradiusIp: options.freeradiusIp, ip: options.realIp }
+    );
     await log(false, 'forbidden_source');
     return reject(
       403,
@@ -99,6 +110,10 @@ const validateRequestSource = async (
     );
   }
   if (!(nasMac && request.IP)) {
+    logger.warn('Radius request missing NAS or IP {nas} {ip}', {
+      ip: request.IP,
+      nas: request.NAS,
+    });
     await log(false, 'nas_not_found');
     return reject(
       403,
@@ -114,6 +129,10 @@ const validateRequestSource = async (
     )
     .limit(1);
   if (!nas) {
+    logger.warn('Radius request from unknown NAS {nasMac} / {ip}', {
+      ip: request.IP,
+      nasMac,
+    });
     await log(false, 'nas_not_found');
     return reject(
       403,
@@ -153,6 +172,9 @@ export const authorizeRadius = async (
   const mac = normalizeSourceMac(request.source);
   const nasMac = normalizeNasMac(request.NAS);
   if (!options.sharedSecret || request.sharedSecret !== options.sharedSecret) {
+    logger.warn('Radius request with invalid shared secret from {source}', {
+      source: request.source,
+    });
     return reject(
       403,
       'You are not allowed to access this resource.',
@@ -189,6 +211,7 @@ export const authorizeRadius = async (
     .where(eq(wifiDevice.macAddress, mac))
     .limit(1);
   if (globalDevice?.banned) {
+    logger.warn('Radius request from globally banned MAC {mac}', { mac });
     await log(false, 'mac_banned_global');
     return reject(
       403,
@@ -202,10 +225,16 @@ export const authorizeRadius = async (
     .where(eq(wifiUser.username, request.username))
     .limit(1);
   if (!account) {
+    logger.debug('Radius request for unknown user {username}', {
+      username: request.username,
+    });
     await log(false, 'not_found');
     return reject(404, 'The requested user was not found.', 'NOT_FOUND');
   }
   if (account.banned) {
+    logger.warn('Radius request for banned user {username}', {
+      username: request.username,
+    });
     await log(false, 'banned', account.id);
     return reject(
       403,
@@ -224,6 +253,10 @@ export const authorizeRadius = async (
       }
     })
   ) {
+    logger.warn(
+      'Radius request for user {username} from non-whitelisted MAC {mac}',
+      { mac, username: request.username }
+    );
     await log(false, 'not_whitelisted', account.id);
     return reject(
       403,
@@ -239,6 +272,9 @@ export const authorizeRadius = async (
       account.salt
     );
     if (password !== request.password) {
+      logger.warn('Radius request with invalid password for {username}', {
+        username: request.username,
+      });
       await log(false, 'invalid_password', account.id);
       return reject(
         403,
@@ -261,6 +297,10 @@ export const authorizeRadius = async (
         },
         target: wifiDevice.macAddress,
       });
+    logger.info('Successfully authorized {username} on {mac}', {
+      mac,
+      username: request.username,
+    });
     await log(true, null, account.id);
     if (options.controller) {
       enrichControllerDevice(mac, account, options.controller);
@@ -274,7 +314,11 @@ export const authorizeRadius = async (
       },
       status: 200,
     };
-  } catch {
+  } catch (e) {
+    logger.error('Internal error authorizing radius user {username}: {error}', {
+      error: e,
+      username: request.username,
+    });
     await log(false, 'invalid_password', account.id);
     return reject(
       500,
