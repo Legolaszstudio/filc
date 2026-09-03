@@ -1,9 +1,12 @@
+import { getLogger } from '@logtape/logtape';
 import type {
   WifiController,
   WifiSpeedProfile,
   WifiSpeedProfileInput,
 } from './controller';
 import { UnifiClient } from './unifi-api';
+
+const logger = getLogger(['chronos', 'wifi', 'unifi-controller']);
 
 export class UnifiController implements WifiController {
   readonly provider = 'unifi';
@@ -18,12 +21,26 @@ export class UnifiController implements WifiController {
   }
 
   async updateClientName(macAddress: string, name: string): Promise<void> {
-    const devices = await this.client.getClientDevice(macAddress);
-    const device = devices[0];
-    if (device) {
-      await this.client.setClientName(device._id, name);
-      const newName = `${device.hostname ?? macAddress} - ${name}`;
-      await this.client.setClientName(device._id, newName);
+    try {
+      const devices = await this.client.getClientDevice(macAddress);
+      const device = devices[0];
+      if (device) {
+        const newName = `${device.hostname ?? macAddress} - ${name}`;
+        await this.client.setClientName(device._id, newName);
+        logger.debug('Updated Unifi client name for {mac} to "{newName}"', {
+          mac: macAddress,
+          newName,
+        });
+      } else {
+        logger.warn('Unifi client not found for MAC {mac}', {
+          mac: macAddress,
+        });
+      }
+    } catch (error) {
+      logger.error('Error updating Unifi client name for {mac}: {error}', {
+        error,
+        mac: macAddress,
+      });
     }
   }
 
