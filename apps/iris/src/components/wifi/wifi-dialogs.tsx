@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/dialog';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import {
   Select,
   SelectContent,
@@ -137,14 +138,13 @@ export function WifiUserDialog({
             {(field) => (
               <Field>
                 <FieldLabel>{t('login.password', 'Password')}</FieldLabel>
-                <Input
+                <PasswordInput
                   onChange={(e) => field.handleChange(e.target.value)}
                   placeholder={
                     isEditing
                       ? t('leaveBlankToKeep', 'Leave blank to keep current')
                       : ''
                   }
-                  type="password"
                   value={field.state.value}
                 />
               <FieldError errors={field.state.meta.errors} />

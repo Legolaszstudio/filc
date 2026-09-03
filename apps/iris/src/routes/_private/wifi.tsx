@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import {
@@ -281,13 +282,12 @@ function SetupLater({
                 >
                   {t('wifi.password')}
                 </label>
-                <Input
+                <PasswordInput
                   id={`password_${field.name}`}
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   placeholder={t('wifi.passwordPlaceholder')}
-                  type="password"
                   value={field.state.value}
                 />
                 {field.state.meta.errors.length > 0 && (
@@ -318,13 +318,12 @@ function SetupLater({
                 >
                   {t('wifi.confirmPassword')}
                 </label>
-                <Input
+                <PasswordInput
                   id={`confirmPassword_${field.name}`}
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   placeholder={t('wifi.confirmPasswordPlaceholder')}
-                  type="password"
                   value={field.state.value}
                 />
                 {field.state.meta.errors.length > 0 && (
@@ -669,13 +668,12 @@ function PasswordChangeForm({ t }: { t: (key: string) => string }) {
                   >
                     {t('wifi.newPassword')}
                   </label>
-                  <Input
+                  <PasswordInput
                     id={`newPassword_${field.name}`}
                     name={field.name}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder={t('wifi.newPasswordPlaceholder')}
-                    type="password"
                     value={field.state.value}
                   />
                   {field.state.meta.errors.length > 0 && (
@@ -705,13 +703,12 @@ function PasswordChangeForm({ t }: { t: (key: string) => string }) {
                   >
                     {t('wifi.confirmPassword')}
                   </label>
-                  <Input
+                  <PasswordInput
                     id={`confirmPassword_${field.name}`}
                     name={field.name}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder={t('wifi.confirmPasswordPlaceholder')}
-                    type="password"
                     value={field.state.value}
                   />
                   {field.state.meta.errors.length > 0 && (

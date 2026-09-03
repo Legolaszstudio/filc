@@ -316,7 +316,9 @@
     "complete": "Befejezés",
     "delete": "Törlés",
     "deleting": "Törlés...",
-    "save": "Mentés"
+    "save": "Mentés",
+    "showPassword": "Jelszó megjelenítése",
+    "hidePassword": "Jelszó elrejtése"
   },
   "navigation": {
     "title": "Navigáció",

@@ -59,7 +59,9 @@
     "complete": "Complete",
     "delete": "Delete",
     "deleting": "Deleting...",
-    "save": "Save"
+    "save": "Save",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "login": {
     "byContinuing": "By continuing, you agree to our",
