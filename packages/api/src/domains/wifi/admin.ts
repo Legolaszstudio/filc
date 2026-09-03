@@ -53,6 +53,7 @@ export const wifiNasSchema = z.object({
 export const wifiSpeedProfileSchema = z.object({
   downloadSpeedMbps: z.number().int().nullable(),
   id: z.string(),
+  isWlanDefault: z.boolean(),
   name: z.string(),
   uploadSpeedMbps: z.number().int().nullable(),
 });

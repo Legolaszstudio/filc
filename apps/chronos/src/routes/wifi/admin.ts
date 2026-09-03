@@ -28,6 +28,7 @@ import {
   wifiDevice,
   wifiNas,
   wifiRoleSpeedProfile,
+  wifiSpeedProfile,
   wifiUser,
 } from '#database/schema/wifi';
 import { authRouter } from '#middleware/auth';
@@ -95,7 +96,10 @@ const configured = () => {
   return controller;
 };
 
-const serializeSpeedProfile = (profile: WifiSpeedProfile | undefined) => {
+const serializeSpeedProfile = (
+  profile: WifiSpeedProfile | undefined,
+  isWlanDefault = false
+) => {
   if (!profile) {
     throw new HTTPException(StatusCodes.SERVICE_UNAVAILABLE, {
       message: 'UniFi did not return a speed profile',
@@ -104,6 +108,7 @@ const serializeSpeedProfile = (profile: WifiSpeedProfile | undefined) => {
   return {
     downloadSpeedMbps: profile.downloadSpeedMbps ?? null,
     id: profile.id,
+    isWlanDefault,
     name: profile.name,
     uploadSpeedMbps: profile.uploadSpeedMbps ?? null,
   };
@@ -462,7 +467,20 @@ export const listWifiSpeedProfilesRoute = wifiFactory.createHandlers(
   ...authRouter(permissions.wifiRead),
   async (c) => {
     const profiles = await configured().getSpeedProfiles();
-    return ok(c, profiles.map(serializeSpeedProfile));
+    const dbProfiles = await db
+      .select({
+        id: wifiSpeedProfile.id,
+        isWlanDefault: wifiSpeedProfile.isWlanDefault,
+      })
+      .from(wifiSpeedProfile);
+
+    return ok(
+      c,
+      profiles.map((p) => {
+        const dbProfile = dbProfiles.find((dbp) => dbp.id === p.id);
+        return serializeSpeedProfile(p, dbProfile?.isWlanDefault ?? false);
+      })
+    );
   }
 );
 
@@ -522,7 +540,15 @@ export const updateWifiSpeedProfileRoute = wifiFactory.createHandlers(
           payload.uploadSpeedMbps ?? current.uploadSpeedMbps ?? -1,
       }
     );
-    return ok(c, serializeSpeedProfile(profile));
+    const [dbProfile] = await db
+      .select({ isWlanDefault: wifiSpeedProfile.isWlanDefault })
+      .from(wifiSpeedProfile)
+      .where(eq(wifiSpeedProfile.id, profile.id))
+      .limit(1);
+    return ok(
+      c,
+      serializeSpeedProfile(profile, dbProfile?.isWlanDefault ?? false)
+    );
   }
 );
 

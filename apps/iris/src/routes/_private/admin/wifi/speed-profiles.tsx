@@ -171,48 +171,57 @@ function WifiSpeedProfilesPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                profiles.map((p) => (
-                  <TableRow key={p.id}>
-                    <TableCell className="font-medium">{p.name}</TableCell>
-                    <TableCell>
-                      {p.downloadSpeedMbps === null ? (
-                        <Badge variant="secondary">
-                          {t('wifiAdminProfiles.unlimited', 'Unlimited')}
-                        </Badge>
-                      ) : (
-                        p.downloadSpeedMbps
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {p.uploadSpeedMbps === null ? (
-                        <Badge variant="secondary">
-                          {t('wifiAdminProfiles.unlimited', 'Unlimited')}
-                        </Badge>
-                      ) : (
-                        p.uploadSpeedMbps
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          onClick={() => handleEditProfile(p)}
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          className="text-destructive"
-                          onClick={() => handleDeleteProfile(p)}
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <Trash className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                profiles
+                  .filter((p) => p.name !== 'Default')
+                  .map((p) => (
+                    <TableRow key={p.id}>
+                      <TableCell className="font-medium">
+                        {p.name}
+                        {p.isWlanDefault && (
+                          <Badge className="ml-2" variant="outline">
+                            {t('wifi.wlan_default', 'WLAN default')}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {p.downloadSpeedMbps === null ? (
+                          <Badge variant="secondary">
+                            {t('wifiAdminProfiles.unlimited', 'Unlimited')}
+                          </Badge>
+                        ) : (
+                          p.downloadSpeedMbps
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {p.uploadSpeedMbps === null ? (
+                          <Badge variant="secondary">
+                            {t('wifiAdminProfiles.unlimited', 'Unlimited')}
+                          </Badge>
+                        ) : (
+                          p.uploadSpeedMbps
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            onClick={() => handleEditProfile(p)}
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            className="text-destructive"
+                            onClick={() => handleDeleteProfile(p)}
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
               )}
             </TableBody>
           </Table>

@@ -200,11 +200,11 @@ export const getSelfWifiRoute = wifiFactory.createHandlers(
         comment: account.comment,
         devices,
         speedLimit: {
-          downloadSpeedMbps: null,
+          downloadSpeedMbps: speed.downloadSpeedMbps,
           roleName: speed.roleName,
           source: speed.source,
           speedProfileId: speed.speedProfileId,
-          uploadSpeedMbps: null,
+          uploadSpeedMbps: speed.uploadSpeedMbps,
         },
         username: account.username,
       },

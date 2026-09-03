@@ -74,18 +74,8 @@ export const resolveEffectiveSpeedProfileDetails = async (
     }
   }
 
-  // If we fell back to wlan_default, we need to fetch the actual speed profile ID from the controller cache
-  if (source === 'wlan_default') {
-    const [defaultProfile] = await db
-      .select({ id: wifiSpeedProfile.id })
-      .from(wifiSpeedProfile)
-      .where(eq(wifiSpeedProfile.isWlanDefault, true))
-      .limit(1);
-
-    if (defaultProfile) {
-      speedProfileId = defaultProfile.id;
-    }
-  }
+  // If we fell back to wlan_default, we no longer enforce it explicitly, so we keep speedProfileId as null.
+  // The controller itself will apply the wlan default speed limit.
 
   const limits = await resolveLimits(speedProfileId);
 
