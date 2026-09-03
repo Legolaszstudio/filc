@@ -17,6 +17,16 @@ export class UnifiController implements WifiController {
     return this.client.fetchClientHostname(macAddress);
   }
 
+  async updateClientName(macAddress: string, name: string): Promise<void> {
+    const devices = await this.client.getClientDevice(macAddress);
+    const device = devices[0];
+    if (device) {
+      await this.client.setClientName(device._id, name);
+      const newName = `${device.hostname ?? macAddress} - ${name}`;
+      await this.client.setClientName(device._id, newName);
+    }
+  }
+
   applySpeedProfile(macAddress: string, speedProfileId: string) {
     return this.client.applySpeedProfile(macAddress, speedProfileId);
   }

@@ -143,26 +143,41 @@ const validateRequestSource = async (
   return null;
 };
 
+const deviceUpdateTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+
 const enrichControllerDevice = (
   mac: string,
   account: typeof wifiUser.$inferSelect,
   controller: WifiController
 ): void => {
-  Promise.all([
-    controller
-      .fetchClientHostname(mac)
-      .then((reportedHostname) =>
-        reportedHostname
-          ? db
-              .update(wifiDevice)
-              .set({ reportedHostname, updatedAt: new Date() })
-              .where(eq(wifiDevice.macAddress, mac))
-          : undefined
+  if (deviceUpdateTimeouts.has(mac)) {
+    return;
+  }
+  const timeout = setTimeout(() => {
+    Promise.all([
+      controller
+        .fetchClientHostname(mac)
+        .then((reportedHostname) =>
+          reportedHostname
+            ? db
+                .update(wifiDevice)
+                .set({ reportedHostname, updatedAt: new Date() })
+                .where(eq(wifiDevice.macAddress, mac))
+            : undefined
+        ),
+      resolveEffectiveSpeedProfile(account).then((profileId) =>
+        profileId ? controller.applySpeedProfile(mac, profileId) : undefined
       ),
-    resolveEffectiveSpeedProfile(account).then((profileId) =>
-      profileId ? controller.applySpeedProfile(mac, profileId) : undefined
-    ),
-  ]).catch(() => undefined);
+      controller.updateClientName(mac, account.username),
+    ])
+      .catch((error) => {
+        logger.error('Error in enrichControllerDevice: {error}', { error });
+      })
+      .finally(() => {
+        deviceUpdateTimeouts.delete(mac);
+      });
+  }, 180 * 1000);
+  deviceUpdateTimeouts.set(mac, timeout);
 };
 
 export const authorizeRadius = async (
