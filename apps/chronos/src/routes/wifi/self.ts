@@ -1,3 +1,5 @@
+import { existsSync, statSync } from 'node:fs';
+import path from 'node:path';
 import { wifiIdParamSchema } from '@filcdev/api/domains/wifi/admin';
 import {
   wifiSelfCreateResponseSchema,
@@ -9,6 +11,7 @@ import {
   wifiSelfSchema,
 } from '@filcdev/api/domains/wifi/self';
 import { zValidator } from '@hono/zod-validator';
+import { getLogger } from '@logtape/logtape';
 import { and, eq, isNull } from 'drizzle-orm';
 import { HTTPException } from 'hono/http-exception';
 import { describeRoute, resolver } from 'hono-openapi';
@@ -22,6 +25,9 @@ import { filcExt } from '#utils/openapi';
 import { encryptPassword } from '#utils/wifi/encryptor';
 import { resolveEffectiveSpeedProfileDetails } from '#utils/wifi/speed-profile';
 import { wifiFactory } from './_factory';
+
+const logger = getLogger(['chronos', 'wifi', 'self']);
+const FREERADIUS_REGEX = /freeradius/gi;
 
 const selfDeviceResponseSchema = resolver(wifiSelfDeviceSchema);
 const { schema: wifiSelfDeviceUpdateOpenApiSchema } = await resolver(
@@ -310,6 +316,77 @@ export const updateSelfWifiPasswordRoute = wifiFactory.createHandlers(
   }
 );
 
+function findCertFile(targetPath: string): string | null {
+  if (!existsSync(targetPath)) {
+    return null;
+  }
+  try {
+    const stat = statSync(targetPath);
+    if (stat.isFile()) {
+      return targetPath;
+    }
+    if (stat.isDirectory()) {
+      const caPem = path.join(targetPath, 'ca.pem');
+      if (existsSync(caPem)) {
+        return caPem;
+      }
+      const caCrt = path.join(targetPath, 'ca.crt');
+      if (existsSync(caCrt)) {
+        return caCrt;
+      }
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+export function resolveWifiCaCertPath(configuredPath?: string): string | null {
+  if (!configuredPath) {
+    return null;
+  }
+
+  const normalized = configuredPath.trim();
+  if (!normalized) {
+    return null;
+  }
+
+  const candidates: string[] = [];
+
+  if (path.isAbsolute(normalized)) {
+    candidates.push(normalized);
+  } else {
+    // Relative paths: resolve relative to process.cwd(), as well as parent levels
+    candidates.push(path.resolve(process.cwd(), normalized));
+    candidates.push(path.resolve(process.cwd(), '..', normalized));
+    candidates.push(path.resolve(process.cwd(), '../..', normalized));
+
+    // Also resolve relative to Chronos package root and workspace repo root
+    const chronosDir = path.resolve(import.meta.dir, '../../..');
+    const repoRootDir = path.resolve(import.meta.dir, '../../../..');
+    candidates.push(path.resolve(chronosDir, normalized));
+    candidates.push(path.resolve(repoRootDir, normalized));
+  }
+
+  // Also check candidate variations if user wrote "freeradius" instead of "radius"
+  const extraCandidates: string[] = [];
+  for (const c of candidates) {
+    if (c.toLowerCase().includes('freeradius')) {
+      extraCandidates.push(c.replace(FREERADIUS_REGEX, 'radius'));
+    }
+  }
+  candidates.push(...extraCandidates);
+
+  for (const candidate of candidates) {
+    const certFile = findCertFile(candidate);
+    if (certFile) {
+      return certFile;
+    }
+  }
+
+  return null;
+}
+
 export const getSelfWifiCertificateRoute = wifiFactory.createHandlers(
   describeRoute({
     ...filcExt('WiFi', '@nodata'),
@@ -332,10 +409,20 @@ export const getSelfWifiCertificateRoute = wifiFactory.createHandlers(
       throw notFound('WiFi account not found');
     }
 
-    const certPath = env.wifiCaCertPath;
-    if (!certPath) {
+    const rawCertPath = env.wifiCaCertPath;
+    if (!rawCertPath) {
       throw new HTTPException(StatusCodes.SERVICE_UNAVAILABLE, {
         message: 'WiFi CA certificate is not configured',
+      });
+    }
+
+    const certPath = resolveWifiCaCertPath(rawCertPath);
+    if (!certPath) {
+      logger.error('WiFi CA certificate file not found: {rawPath}', {
+        rawPath: rawCertPath,
+      });
+      throw new HTTPException(StatusCodes.INTERNAL_SERVER_ERROR, {
+        message: 'Failed to read CA certificate file',
       });
     }
 
@@ -344,7 +431,10 @@ export const getSelfWifiCertificateRoute = wifiFactory.createHandlers(
       return c.text(cert, 200, {
         'Content-Disposition': 'attachment; filename="wifi-ca.pem"',
       });
-    } catch {
+    } catch (err) {
+      logger.error('Failed to read CA certificate file: {error}', {
+        error: String(err),
+      });
       throw new HTTPException(StatusCodes.INTERNAL_SERVER_ERROR, {
         message: 'Failed to read CA certificate file',
       });
