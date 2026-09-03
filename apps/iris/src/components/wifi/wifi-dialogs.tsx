@@ -162,6 +162,9 @@ export function WifiUserDialog({
                 <FieldLabel>
                   {t('wifiAdminUsers.comment', 'Comment')}
                 </FieldLabel>
+                <p className="mt-1 text-muted-foreground text-xs">
+                  {t('wifiAdminUsers.commentHint', 'Only visible to admins')}
+                </p>
                 <Input
                   onChange={(e) => field.handleChange(e.target.value)}
                   value={field.state.value ?? ''}
@@ -316,6 +319,9 @@ export function WifiDeviceDialog({
                 <FieldLabel>
                   {t('wifiAdminUsers.deviceNickname', 'Nickname')}
                 </FieldLabel>
+                <p className="mt-1 text-muted-foreground text-xs">
+                  {t('wifiAdminUsers.nicknameHint', 'Visible to the user')}
+                </p>
                 <Input
                   onChange={(e) => field.handleChange(e.target.value)}
                   value={field.state.value ?? ''}
@@ -331,6 +337,9 @@ export function WifiDeviceDialog({
                 <FieldLabel>
                   {t('wifiAdminUsers.comment', 'Comment')}
                 </FieldLabel>
+                <p className="mt-1 text-muted-foreground text-xs">
+                  {t('wifiAdminUsers.commentHint', 'Only visible to admins')}
+                </p>
                 <Input
                   onChange={(e) => field.handleChange(e.target.value)}
                   value={field.state.value ?? ''}

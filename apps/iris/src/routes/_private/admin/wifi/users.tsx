@@ -510,7 +510,22 @@ function WifiUsersPage() {
                                     </TableCell>
                                     <TableCell>
                                       <div className="flex flex-col">
-                                        <span>{d.nickname ?? '-'}</span>
+                                        <div className="flex items-baseline gap-2">
+                                          <span className="font-medium">
+                                            {d.nickname ?? '-'}
+                                          </span>
+                                          {d.reportedHostname && (
+                                            <span
+                                              className="text-muted-foreground text-xs"
+                                              title={t(
+                                                'wifiAdminUsers.reportedHostname',
+                                                'Reported Hostname'
+                                              )}
+                                            >
+                                              ({d.reportedHostname})
+                                            </span>
+                                          )}
+                                        </div>
                                         {d.adminNotes && (
                                           <span className="max-w-[150px] truncate text-muted-foreground text-xs">
                                             {d.adminNotes}
