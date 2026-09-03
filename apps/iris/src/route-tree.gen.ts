@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrivateRouteRouteImport } from './routes/_private/route'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as PrivateAdminRouteRouteImport } from './routes/_private/admin/route'
-import { Route as PrivateNotificationsRouteImport } from './routes/_private/notifications'
 import { Route as PrivateSettingsRouteImport } from './routes/_private/settings'
 import { Route as PrivateWifiRouteImport } from './routes/_private/wifi'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
@@ -25,6 +24,7 @@ import { Route as PrivateAdminBugReportsRouteImport } from './routes/_private/ad
 import { Route as PrivateAdminRolesRouteImport } from './routes/_private/admin/roles'
 import { Route as PrivateAdminUsersRouteImport } from './routes/_private/admin/users'
 import { Route as PrivateCardsIndexRouteImport } from './routes/_private/cards/index'
+import { Route as PrivateAdminDevNotificationsRouteImport } from './routes/_private/admin/dev/notifications'
 import { Route as PrivateAdminDoorlockIndexRouteImport } from './routes/_private/admin/doorlock/index'
 import { Route as PrivateAdminDoorlockCardsRouteImport } from './routes/_private/admin/doorlock/cards'
 import { Route as PrivateAdminDoorlockDevicesRouteImport } from './routes/_private/admin/doorlock/devices'
@@ -35,6 +35,7 @@ import { Route as PrivateAdminTimetableImportRouteImport } from './routes/_priva
 import { Route as PrivateAdminTimetableManageRouteImport } from './routes/_private/admin/timetable/manage'
 import { Route as PrivateAdminTimetableMovedLessonsRouteImport } from './routes/_private/admin/timetable/moved-lessons'
 import { Route as PrivateAdminTimetableSubstitutionsRouteImport } from './routes/_private/admin/timetable/substitutions'
+import { Route as PrivateAdminTimetableTeachersRouteImport } from './routes/_private/admin/timetable/teachers'
 import { Route as PrivateAdminWifiIndexRouteImport } from './routes/_private/admin/wifi/index'
 import { Route as PrivateAdminWifiNasRouteImport } from './routes/_private/admin/wifi/nas'
 import { Route as PrivateAdminWifiSpeedProfilesRouteImport } from './routes/_private/admin/wifi/speed-profiles'
@@ -51,11 +52,6 @@ const PublicRouteRoute = PublicRouteRouteImport.update({
 const PrivateAdminRouteRoute = PrivateAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => PrivateRouteRoute,
-} as any)
-const PrivateNotificationsRoute = PrivateNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
   getParentRoute: () => PrivateRouteRoute,
 } as any)
 const PrivateSettingsRoute = PrivateSettingsRouteImport.update({
@@ -118,6 +114,12 @@ const PrivateCardsIndexRoute = PrivateCardsIndexRouteImport.update({
   path: '/cards/',
   getParentRoute: () => PrivateRouteRoute,
 } as any)
+const PrivateAdminDevNotificationsRoute =
+  PrivateAdminDevNotificationsRouteImport.update({
+    id: '/dev/notifications',
+    path: '/dev/notifications',
+    getParentRoute: () => PrivateAdminRouteRoute,
+  } as any)
 const PrivateAdminDoorlockIndexRoute =
   PrivateAdminDoorlockIndexRouteImport.update({
     id: '/doorlock/',
@@ -178,6 +180,12 @@ const PrivateAdminTimetableSubstitutionsRoute =
     path: '/timetable/substitutions',
     getParentRoute: () => PrivateAdminRouteRoute,
   } as any)
+const PrivateAdminTimetableTeachersRoute =
+  PrivateAdminTimetableTeachersRouteImport.update({
+    id: '/timetable/teachers',
+    path: '/timetable/teachers',
+    getParentRoute: () => PrivateAdminRouteRoute,
+  } as any)
 const PrivateAdminWifiIndexRoute = PrivateAdminWifiIndexRouteImport.update({
   id: '/wifi/',
   path: '/wifi/',
@@ -203,7 +211,6 @@ const PrivateAdminWifiUsersRoute = PrivateAdminWifiUsersRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/admin': typeof PrivateAdminRouteRouteWithChildren
-  '/notifications': typeof PrivateNotificationsRoute
   '/settings': typeof PrivateSettingsRoute
   '/wifi': typeof PrivateWifiRoute
   '/subs': typeof PublicSubsRoute
@@ -215,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/admin/roles': typeof PrivateAdminRolesRoute
   '/admin/users': typeof PrivateAdminUsersRoute
   '/cards/': typeof PrivateCardsIndexRoute
+  '/admin/dev/notifications': typeof PrivateAdminDevNotificationsRoute
   '/admin/doorlock/cards': typeof PrivateAdminDoorlockCardsRoute
   '/admin/doorlock/devices': typeof PrivateAdminDoorlockDevicesRoute
   '/admin/doorlock/logs': typeof PrivateAdminDoorlockLogsRoute
@@ -224,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/admin/timetable/manage': typeof PrivateAdminTimetableManageRoute
   '/admin/timetable/moved-lessons': typeof PrivateAdminTimetableMovedLessonsRoute
   '/admin/timetable/substitutions': typeof PrivateAdminTimetableSubstitutionsRoute
+  '/admin/timetable/teachers': typeof PrivateAdminTimetableTeachersRoute
   '/admin/wifi/nas': typeof PrivateAdminWifiNasRoute
   '/admin/wifi/speed-profiles': typeof PrivateAdminWifiSpeedProfilesRoute
   '/admin/wifi/users': typeof PrivateAdminWifiUsersRoute
@@ -233,7 +242,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/admin': typeof PrivateAdminRouteRouteWithChildren
-  '/notifications': typeof PrivateNotificationsRoute
   '/settings': typeof PrivateSettingsRoute
   '/wifi': typeof PrivateWifiRoute
   '/subs': typeof PublicSubsRoute
@@ -245,6 +253,7 @@ export interface FileRoutesByTo {
   '/admin/roles': typeof PrivateAdminRolesRoute
   '/admin/users': typeof PrivateAdminUsersRoute
   '/cards': typeof PrivateCardsIndexRoute
+  '/admin/dev/notifications': typeof PrivateAdminDevNotificationsRoute
   '/admin/doorlock/cards': typeof PrivateAdminDoorlockCardsRoute
   '/admin/doorlock/devices': typeof PrivateAdminDoorlockDevicesRoute
   '/admin/doorlock/logs': typeof PrivateAdminDoorlockLogsRoute
@@ -254,6 +263,7 @@ export interface FileRoutesByTo {
   '/admin/timetable/manage': typeof PrivateAdminTimetableManageRoute
   '/admin/timetable/moved-lessons': typeof PrivateAdminTimetableMovedLessonsRoute
   '/admin/timetable/substitutions': typeof PrivateAdminTimetableSubstitutionsRoute
+  '/admin/timetable/teachers': typeof PrivateAdminTimetableTeachersRoute
   '/admin/wifi/nas': typeof PrivateAdminWifiNasRoute
   '/admin/wifi/speed-profiles': typeof PrivateAdminWifiSpeedProfilesRoute
   '/admin/wifi/users': typeof PrivateAdminWifiUsersRoute
@@ -265,7 +275,6 @@ export interface FileRoutesById {
   '/_private': typeof PrivateRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
   '/_private/admin': typeof PrivateAdminRouteRouteWithChildren
-  '/_private/notifications': typeof PrivateNotificationsRoute
   '/_private/settings': typeof PrivateSettingsRoute
   '/_private/wifi': typeof PrivateWifiRoute
   '/_public/subs': typeof PublicSubsRoute
@@ -278,6 +287,7 @@ export interface FileRoutesById {
   '/_private/admin/roles': typeof PrivateAdminRolesRoute
   '/_private/admin/users': typeof PrivateAdminUsersRoute
   '/_private/cards/': typeof PrivateCardsIndexRoute
+  '/_private/admin/dev/notifications': typeof PrivateAdminDevNotificationsRoute
   '/_private/admin/doorlock/cards': typeof PrivateAdminDoorlockCardsRoute
   '/_private/admin/doorlock/devices': typeof PrivateAdminDoorlockDevicesRoute
   '/_private/admin/doorlock/logs': typeof PrivateAdminDoorlockLogsRoute
@@ -287,6 +297,7 @@ export interface FileRoutesById {
   '/_private/admin/timetable/manage': typeof PrivateAdminTimetableManageRoute
   '/_private/admin/timetable/moved-lessons': typeof PrivateAdminTimetableMovedLessonsRoute
   '/_private/admin/timetable/substitutions': typeof PrivateAdminTimetableSubstitutionsRoute
+  '/_private/admin/timetable/teachers': typeof PrivateAdminTimetableTeachersRoute
   '/_private/admin/wifi/nas': typeof PrivateAdminWifiNasRoute
   '/_private/admin/wifi/speed-profiles': typeof PrivateAdminWifiSpeedProfilesRoute
   '/_private/admin/wifi/users': typeof PrivateAdminWifiUsersRoute
@@ -298,7 +309,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/notifications'
     | '/settings'
     | '/wifi'
     | '/subs'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/admin/roles'
     | '/admin/users'
     | '/cards/'
+    | '/admin/dev/notifications'
     | '/admin/doorlock/cards'
     | '/admin/doorlock/devices'
     | '/admin/doorlock/logs'
@@ -319,6 +330,7 @@ export interface FileRouteTypes {
     | '/admin/timetable/manage'
     | '/admin/timetable/moved-lessons'
     | '/admin/timetable/substitutions'
+    | '/admin/timetable/teachers'
     | '/admin/wifi/nas'
     | '/admin/wifi/speed-profiles'
     | '/admin/wifi/users'
@@ -328,7 +340,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
-    | '/notifications'
     | '/settings'
     | '/wifi'
     | '/subs'
@@ -340,6 +351,7 @@ export interface FileRouteTypes {
     | '/admin/roles'
     | '/admin/users'
     | '/cards'
+    | '/admin/dev/notifications'
     | '/admin/doorlock/cards'
     | '/admin/doorlock/devices'
     | '/admin/doorlock/logs'
@@ -349,6 +361,7 @@ export interface FileRouteTypes {
     | '/admin/timetable/manage'
     | '/admin/timetable/moved-lessons'
     | '/admin/timetable/substitutions'
+    | '/admin/timetable/teachers'
     | '/admin/wifi/nas'
     | '/admin/wifi/speed-profiles'
     | '/admin/wifi/users'
@@ -359,7 +372,6 @@ export interface FileRouteTypes {
     | '/_private'
     | '/_public'
     | '/_private/admin'
-    | '/_private/notifications'
     | '/_private/settings'
     | '/_private/wifi'
     | '/_public/subs'
@@ -372,6 +384,7 @@ export interface FileRouteTypes {
     | '/_private/admin/roles'
     | '/_private/admin/users'
     | '/_private/cards/'
+    | '/_private/admin/dev/notifications'
     | '/_private/admin/doorlock/cards'
     | '/_private/admin/doorlock/devices'
     | '/_private/admin/doorlock/logs'
@@ -381,6 +394,7 @@ export interface FileRouteTypes {
     | '/_private/admin/timetable/manage'
     | '/_private/admin/timetable/moved-lessons'
     | '/_private/admin/timetable/substitutions'
+    | '/_private/admin/timetable/teachers'
     | '/_private/admin/wifi/nas'
     | '/_private/admin/wifi/speed-profiles'
     | '/_private/admin/wifi/users'
@@ -417,13 +431,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof PrivateAdminRouteRouteImport
-      parentRoute: typeof PrivateRouteRoute
-    }
-    '/_private/notifications': {
-      id: '/_private/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof PrivateNotificationsRouteImport
       parentRoute: typeof PrivateRouteRoute
     }
     '/_private/settings': {
@@ -510,6 +517,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateCardsIndexRouteImport
       parentRoute: typeof PrivateRouteRoute
     }
+    '/_private/admin/dev/notifications': {
+      id: '/_private/admin/dev/notifications'
+      path: '/dev/notifications'
+      fullPath: '/admin/dev/notifications'
+      preLoaderRoute: typeof PrivateAdminDevNotificationsRouteImport
+      parentRoute: typeof PrivateAdminRouteRoute
+    }
     '/_private/admin/doorlock/': {
       id: '/_private/admin/doorlock/'
       path: '/doorlock'
@@ -580,6 +594,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateAdminTimetableSubstitutionsRouteImport
       parentRoute: typeof PrivateAdminRouteRoute
     }
+    '/_private/admin/timetable/teachers': {
+      id: '/_private/admin/timetable/teachers'
+      path: '/timetable/teachers'
+      fullPath: '/admin/timetable/teachers'
+      preLoaderRoute: typeof PrivateAdminTimetableTeachersRouteImport
+      parentRoute: typeof PrivateAdminRouteRoute
+    }
     '/_private/admin/wifi/': {
       id: '/_private/admin/wifi/'
       path: '/wifi'
@@ -615,6 +636,7 @@ interface PrivateAdminRouteRouteChildren {
   PrivateAdminBugReportsRoute: typeof PrivateAdminBugReportsRoute
   PrivateAdminRolesRoute: typeof PrivateAdminRolesRoute
   PrivateAdminUsersRoute: typeof PrivateAdminUsersRoute
+  PrivateAdminDevNotificationsRoute: typeof PrivateAdminDevNotificationsRoute
   PrivateAdminDoorlockCardsRoute: typeof PrivateAdminDoorlockCardsRoute
   PrivateAdminDoorlockDevicesRoute: typeof PrivateAdminDoorlockDevicesRoute
   PrivateAdminDoorlockLogsRoute: typeof PrivateAdminDoorlockLogsRoute
@@ -624,6 +646,7 @@ interface PrivateAdminRouteRouteChildren {
   PrivateAdminTimetableManageRoute: typeof PrivateAdminTimetableManageRoute
   PrivateAdminTimetableMovedLessonsRoute: typeof PrivateAdminTimetableMovedLessonsRoute
   PrivateAdminTimetableSubstitutionsRoute: typeof PrivateAdminTimetableSubstitutionsRoute
+  PrivateAdminTimetableTeachersRoute: typeof PrivateAdminTimetableTeachersRoute
   PrivateAdminWifiNasRoute: typeof PrivateAdminWifiNasRoute
   PrivateAdminWifiSpeedProfilesRoute: typeof PrivateAdminWifiSpeedProfilesRoute
   PrivateAdminWifiUsersRoute: typeof PrivateAdminWifiUsersRoute
@@ -635,6 +658,7 @@ const PrivateAdminRouteRouteChildren: PrivateAdminRouteRouteChildren = {
   PrivateAdminBugReportsRoute: PrivateAdminBugReportsRoute,
   PrivateAdminRolesRoute: PrivateAdminRolesRoute,
   PrivateAdminUsersRoute: PrivateAdminUsersRoute,
+  PrivateAdminDevNotificationsRoute: PrivateAdminDevNotificationsRoute,
   PrivateAdminDoorlockCardsRoute: PrivateAdminDoorlockCardsRoute,
   PrivateAdminDoorlockDevicesRoute: PrivateAdminDoorlockDevicesRoute,
   PrivateAdminDoorlockLogsRoute: PrivateAdminDoorlockLogsRoute,
@@ -646,6 +670,7 @@ const PrivateAdminRouteRouteChildren: PrivateAdminRouteRouteChildren = {
     PrivateAdminTimetableMovedLessonsRoute,
   PrivateAdminTimetableSubstitutionsRoute:
     PrivateAdminTimetableSubstitutionsRoute,
+  PrivateAdminTimetableTeachersRoute: PrivateAdminTimetableTeachersRoute,
   PrivateAdminWifiNasRoute: PrivateAdminWifiNasRoute,
   PrivateAdminWifiSpeedProfilesRoute: PrivateAdminWifiSpeedProfilesRoute,
   PrivateAdminWifiUsersRoute: PrivateAdminWifiUsersRoute,
@@ -658,7 +683,6 @@ const PrivateAdminRouteRouteWithChildren =
 
 interface PrivateRouteRouteChildren {
   PrivateAdminRouteRoute: typeof PrivateAdminRouteRouteWithChildren
-  PrivateNotificationsRoute: typeof PrivateNotificationsRoute
   PrivateSettingsRoute: typeof PrivateSettingsRoute
   PrivateWifiRoute: typeof PrivateWifiRoute
   PrivateCardsIndexRoute: typeof PrivateCardsIndexRoute
@@ -666,7 +690,6 @@ interface PrivateRouteRouteChildren {
 
 const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
   PrivateAdminRouteRoute: PrivateAdminRouteRouteWithChildren,
-  PrivateNotificationsRoute: PrivateNotificationsRoute,
   PrivateSettingsRoute: PrivateSettingsRoute,
   PrivateWifiRoute: PrivateWifiRoute,
   PrivateCardsIndexRoute: PrivateCardsIndexRoute,

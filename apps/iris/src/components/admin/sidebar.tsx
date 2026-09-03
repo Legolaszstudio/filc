@@ -6,6 +6,7 @@ import {
   Bell,
   Bug,
   DoorOpen,
+  FlaskConical,
   Gauge,
   GraduationCap,
   HardDrive,
@@ -15,6 +16,7 @@ import {
   Microchip,
   RefreshCw,
   Shield,
+  UserRound,
   Users,
   Wifi,
 } from 'lucide-react';
@@ -93,6 +95,12 @@ export function AdminSidebar() {
             permission: permissions.movedLessonCreate,
             title: t('movedLesson.title'),
             url: '/admin/timetable/moved-lessons',
+          },
+          {
+            icon: UserRound,
+            permission: permissions.teacherManage,
+            title: t('teachers.title'),
+            url: '/admin/timetable/teachers',
           },
         ],
         label: t('admin.timetable'),
@@ -195,6 +203,21 @@ export function AdminSidebar() {
         ],
         label: t('admin.management'),
       },
+      ...(import.meta.env.MODE === 'development'
+        ? [
+            {
+              items: [
+                {
+                  icon: FlaskConical,
+                  permission: permissions.announcementsCreate,
+                  title: t('devNotifications.title'),
+                  url: '/admin/dev/notifications',
+                },
+              ],
+              label: t('admin.developer'),
+            },
+          ]
+        : []),
     ],
     [t]
   );
