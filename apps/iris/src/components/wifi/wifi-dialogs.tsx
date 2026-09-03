@@ -29,7 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import {
@@ -92,8 +92,12 @@ export function WifiUserDialog({
       }
     },
     validators: {
-      onChange: isEditing ? wifiUserUpdateSchema : (wifiUserCreateSchema as any),
-      onSubmit: isEditing ? wifiUserUpdateSchema : (wifiUserCreateSchema as any),
+      onChange: isEditing
+        ? wifiUserUpdateSchema
+        : (wifiUserCreateSchema as any),
+      onSubmit: isEditing
+        ? wifiUserUpdateSchema
+        : (wifiUserCreateSchema as any),
     },
   });
 
@@ -129,7 +133,7 @@ export function WifiUserDialog({
                   onChange={(e) => field.handleChange(e.target.value)}
                   value={field.state.value}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -147,7 +151,7 @@ export function WifiUserDialog({
                   }
                   value={field.state.value}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -162,7 +166,7 @@ export function WifiUserDialog({
                   onChange={(e) => field.handleChange(e.target.value)}
                   value={field.state.value ?? ''}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -175,8 +179,11 @@ export function WifiUserDialog({
                 </FieldLabel>
                 <Select
                   items={[
-                    { value: 'none', label: t('wifiAdminProfiles.none', 'None') },
-                    ...profiles.map(p => ({ value: p.id, label: p.name }))
+                    {
+                      label: t('wifiAdminProfiles.none', 'None'),
+                      value: 'none',
+                    },
+                    ...profiles.map((p) => ({ label: p.name, value: p.id })),
                   ]}
                   onValueChange={(v) =>
                     field.handleChange(v === 'none' ? null : v)
@@ -187,7 +194,7 @@ export function WifiUserDialog({
                     <SelectValue />
                   </SelectTrigger>
                 </Select>
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -257,8 +264,12 @@ export function WifiDeviceDialog({
       }
     },
     validators: {
-      onChange: isEditing ? wifiDeviceUpdateSchema : (wifiDeviceCreateSchema as any),
-      onSubmit: isEditing ? wifiDeviceUpdateSchema : (wifiDeviceCreateSchema as any),
+      onChange: isEditing
+        ? wifiDeviceUpdateSchema
+        : (wifiDeviceCreateSchema as any),
+      onSubmit: isEditing
+        ? wifiDeviceUpdateSchema
+        : (wifiDeviceCreateSchema as any),
     },
   });
 
@@ -294,7 +305,7 @@ export function WifiDeviceDialog({
                   placeholder="00:11:22:33:44:55"
                   value={field.state.value}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -309,7 +320,7 @@ export function WifiDeviceDialog({
                   onChange={(e) => field.handleChange(e.target.value)}
                   value={field.state.value ?? ''}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -324,7 +335,7 @@ export function WifiDeviceDialog({
                   onChange={(e) => field.handleChange(e.target.value)}
                   value={field.state.value ?? ''}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -426,7 +437,7 @@ export function WifiNasDialog({
                   placeholder="192.168.1.100"
                   value={field.state.value}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -442,7 +453,7 @@ export function WifiNasDialog({
                   placeholder="00:11:22:33:44:55"
                   value={field.state.value}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -455,7 +466,7 @@ export function WifiNasDialog({
                   onChange={(e) => field.handleChange(e.target.value)}
                   value={field.state.value ?? ''}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -513,8 +524,12 @@ export function WifiSpeedProfileDialog({
       }
     },
     validators: {
-      onChange: isEditing ? wifiSpeedProfileUpdateSchema : (wifiSpeedProfileCreateSchema as any),
-      onSubmit: isEditing ? wifiSpeedProfileUpdateSchema : (wifiSpeedProfileCreateSchema as any),
+      onChange: isEditing
+        ? wifiSpeedProfileUpdateSchema
+        : (wifiSpeedProfileCreateSchema as any),
+      onSubmit: isEditing
+        ? wifiSpeedProfileUpdateSchema
+        : (wifiSpeedProfileCreateSchema as any),
     },
   });
 
@@ -547,7 +562,7 @@ export function WifiSpeedProfileDialog({
                   onChange={(e) => field.handleChange(e.target.value)}
                   value={field.state.value}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -568,7 +583,7 @@ export function WifiSpeedProfileDialog({
                 <p className="mt-1 text-muted-foreground text-xs">
                   -1 for unlimited
                 </p>
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -589,7 +604,7 @@ export function WifiSpeedProfileDialog({
                 <p className="mt-1 text-muted-foreground text-xs">
                   -1 for unlimited
                 </p>
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -655,8 +670,12 @@ export function WifiRoleProfileDialog({
       }
     },
     validators: {
-      onChange: isEditing ? wifiRoleSpeedProfileUpdateSchema : (wifiRoleSpeedProfileCreateSchema as any),
-      onSubmit: isEditing ? wifiRoleSpeedProfileUpdateSchema : (wifiRoleSpeedProfileCreateSchema as any),
+      onChange: isEditing
+        ? wifiRoleSpeedProfileUpdateSchema
+        : (wifiRoleSpeedProfileCreateSchema as any),
+      onSubmit: isEditing
+        ? wifiRoleSpeedProfileUpdateSchema
+        : (wifiRoleSpeedProfileCreateSchema as any),
     },
   });
 
@@ -703,7 +722,7 @@ export function WifiRoleProfileDialog({
                     ))}
                   </SelectContent>
                 </Select>
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -729,7 +748,7 @@ export function WifiRoleProfileDialog({
                     ))}
                   </SelectContent>
                 </Select>
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -747,7 +766,7 @@ export function WifiRoleProfileDialog({
                   type="number"
                   value={field.state.value}
                 />
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -768,7 +787,7 @@ export function WifiRoleProfileDialog({
                 <p className="mt-1 text-muted-foreground text-xs">
                   -1 for unlimited / inherited
                 </p>
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>
@@ -789,7 +808,7 @@ export function WifiRoleProfileDialog({
                 <p className="mt-1 text-muted-foreground text-xs">
                   -1 for unlimited / inherited
                 </p>
-              <FieldError errors={field.state.meta.errors} />
+                <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
           </form.Field>

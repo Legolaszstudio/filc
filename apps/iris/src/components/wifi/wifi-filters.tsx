@@ -7,19 +7,17 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useWifiSpeedProfiles } from '@/hooks/wifi-admin';
-import {
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-} from '@/components/ui/dropdown-menu';
 
 export type WifiFilterState = {
   speedProfileId: string | null;
@@ -31,12 +29,12 @@ export type WifiFilterState = {
 };
 
 export const defaultWifiFilterState: WifiFilterState = {
-  speedProfileId: null,
   activeOnly: false,
   bannedOnly: false,
   inactiveOnly: false,
   minDevices: 0,
   sharedMacsOnly: false,
+  speedProfileId: null,
 };
 
 type WifiFiltersProps = {
@@ -91,8 +89,8 @@ export function WifiFilters({ filters, onChange }: WifiFiltersProps) {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel>
-          {t('wifiAdminUsers.filters', 'Filters')}
-        </DropdownMenuLabel>
+            {t('wifiAdminUsers.filters', 'Filters')}
+          </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
 
@@ -150,7 +148,7 @@ export function WifiFilters({ filters, onChange }: WifiFiltersProps) {
             value={filters.minDevices || ''}
           />
         </div>
-      
+
         <DropdownMenuSeparator />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
@@ -159,8 +157,13 @@ export function WifiFilters({ filters, onChange }: WifiFiltersProps) {
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
               <DropdownMenuRadioGroup
+                onValueChange={(v) =>
+                  onChange({
+                    ...filters,
+                    speedProfileId: v === 'all' ? null : v,
+                  })
+                }
                 value={filters.speedProfileId ?? 'all'}
-                onValueChange={(v) => onChange({ ...filters, speedProfileId: v === 'all' ? null : v })}
               >
                 <DropdownMenuRadioItem value="all">
                   {t('wifiAdminProfiles.all', 'All Profiles')}
@@ -168,7 +171,7 @@ export function WifiFilters({ filters, onChange }: WifiFiltersProps) {
                 <DropdownMenuRadioItem value="none">
                   {t('wifiAdminProfiles.none', 'None (Default)')}
                 </DropdownMenuRadioItem>
-                {profiles.map(p => (
+                {profiles.map((p) => (
                   <DropdownMenuRadioItem key={p.id} value={p.id}>
                     {p.name}
                   </DropdownMenuRadioItem>
@@ -177,7 +180,6 @@ export function WifiFilters({ filters, onChange }: WifiFiltersProps) {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
-
       </DropdownMenuContent>
     </DropdownMenu>
   );

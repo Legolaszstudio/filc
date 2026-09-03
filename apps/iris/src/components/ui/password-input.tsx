@@ -1,5 +1,5 @@
-import type { ComponentProps } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -10,7 +10,11 @@ import {
 } from '@/components/ui/input-group';
 import { cn } from '@/utils';
 
-function PasswordInput({ className, disabled, ...props }: ComponentProps<'input'>) {
+function PasswordInput({
+  className,
+  disabled,
+  ...props
+}: ComponentProps<'input'>) {
   const [showPassword, setShowPassword] = useState(false);
   const { t } = useTranslation();
 

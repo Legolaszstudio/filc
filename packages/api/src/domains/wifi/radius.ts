@@ -5,7 +5,7 @@ export const radiusAuthorizeRequestSchema = z.object({
   destination: z.string().optional(),
   IP: z.string().optional(),
   NAS: z.string().optional(),
-  password: z.string(),
+  password: z.string().optional(),
   sharedSecret: z.string().optional(),
   source: z.string(),
   username: z.string(),

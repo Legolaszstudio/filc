@@ -65,7 +65,9 @@ function WifiUsersPage() {
   const [isDeviceOpen, setIsDeviceOpen] = useState(false);
   const [editingDevice, setEditingDevice] = useState<WifiDevice | undefined>();
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
-  const [expandedUsers, setExpandedUsers] = useState<Record<string, boolean>>({});
+  const [expandedUsers, setExpandedUsers] = useState<Record<string, boolean>>(
+    {}
+  );
 
   const usersQuery = useWifiUsers({ limit: 10_000, offset: 0 });
   const devicesQuery = useWifiDevices({ limit: 10_000, offset: 0 });
@@ -245,7 +247,10 @@ function WifiUsersPage() {
         if (
           filters.speedProfileId !== undefined &&
           filters.speedProfileId !== null &&
-          user.speedProfileId !== (filters.speedProfileId === 'none' ? null : filters.speedProfileId) &&
+          user.speedProfileId !==
+            (filters.speedProfileId === 'none'
+              ? null
+              : filters.speedProfileId) &&
           !user.isOrphan
         ) {
           keepUser = false;
@@ -352,7 +357,12 @@ function WifiUsersPage() {
                 >
                   <CollapsibleTrigger
                     className="flex w-full cursor-pointer items-center justify-between py-2 hover:no-underline"
-                    onClick={() => setExpandedUsers(prev => ({ ...prev, [user.id]: !prev[user.id] }))}
+                    onClick={() =>
+                      setExpandedUsers((prev) => ({
+                        ...prev,
+                        [user.id]: !prev[user.id],
+                      }))
+                    }
                   >
                     <div className="flex w-full items-center justify-between pr-4">
                       <div className="flex items-center gap-4 text-left">
@@ -384,8 +394,15 @@ function WifiUsersPage() {
 
                       <div className="flex items-center gap-4 font-normal text-sm">
                         {!isOrphan && user.speedProfileId && (
-                          <div className="hidden text-muted-foreground sm:flex gap-1 items-center">
-                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5">{profiles.find(p => p.id === user.speedProfileId)?.name ?? user.speedProfileId}</Badge>
+                          <div className="hidden items-center gap-1 text-muted-foreground sm:flex">
+                            <Badge
+                              className="h-5 px-1.5 text-[10px]"
+                              variant="secondary"
+                            >
+                              {profiles.find(
+                                (p) => p.id === user.speedProfileId
+                              )?.name ?? user.speedProfileId}
+                            </Badge>
                           </div>
                         )}
                         {!isOrphan && (
