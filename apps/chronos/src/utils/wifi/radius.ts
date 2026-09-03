@@ -23,7 +23,7 @@ export type RadiusAuthorizeRequest = {
   IP?: string;
   NAS?: string;
   destination?: string;
-  password: string;
+  password?: string;
   sharedSecret?: string;
   source: string;
   username: string;
@@ -271,17 +271,6 @@ export const authorizeRadius = async (
       options.encryptionSecret,
       account.salt
     );
-    if (password !== request.password) {
-      logger.warn('Radius request with invalid password for {username}', {
-        username: request.username,
-      });
-      await log(false, 'invalid_password', account.id);
-      return reject(
-        403,
-        'You are not allowed to access this resource.',
-        'FORBIDDEN'
-      );
-    }
     await db
       .insert(wifiDevice)
       .values({
@@ -319,7 +308,7 @@ export const authorizeRadius = async (
       error: e,
       username: request.username,
     });
-    await log(false, 'invalid_password', account.id);
+    await log(false, 'internal_error', account.id);
     return reject(
       500,
       'Internal error while authorizing WiFi user.',
