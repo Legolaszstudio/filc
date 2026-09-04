@@ -255,7 +255,12 @@ export function WifiDeviceDialog({
     defaultValues: {
       adminNotes: device?.adminNotes ?? '',
       banned: device?.banned ?? false,
-      macAddress: device?.macAddress ?? '',
+      macAddress: device?.macAddress
+        ? (device.macAddress
+            .replace(/[^0-9a-fA-F]/g, '')
+            .match(/.{1,2}/g)
+            ?.join(':') ?? device.macAddress)
+        : '',
       nickname: device?.nickname ?? '',
       wifiUserId: device?.wifiUserId ?? wifiUserId ?? null,
     },
@@ -399,7 +404,12 @@ export function WifiNasDialog({
     defaultValues: {
       comment: nas?.comment ?? '',
       ipAddress: nas?.ipAddress ?? '',
-      macAddress: nas?.macAddress ?? '',
+      macAddress: nas?.macAddress
+        ? (nas.macAddress
+            .replace(/[^0-9a-fA-F]/g, '')
+            .match(/.{1,2}/g)
+            ?.join(':') ?? nas.macAddress)
+        : '',
     },
     onSubmit: ({ value }) => {
       if (isEditing) {

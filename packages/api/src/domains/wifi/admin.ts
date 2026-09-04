@@ -68,7 +68,11 @@ export const wifiRoleSpeedProfileSchema = z.object({
 
 export const wifiUserCreateSchema = z.object({
   allowedMacAddresses: z.array(macAddressSchema).optional(),
-  comment: z.string().nullable().optional(),
+  comment: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((v) => (v === '' ? null : v)),
   password: z.string().min(1),
   speedProfileId: z.string().nullable().optional(),
   userId: z.uuid().nullable().optional(),
@@ -84,17 +88,29 @@ export const wifiUserUpdateSchema = wifiUserCreateSchema.partial().extend({
 });
 
 export const wifiDeviceCreateSchema = z.object({
-  adminNotes: z.string().nullable().optional(),
+  adminNotes: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((v) => (v === '' ? null : v)),
   banned: z.boolean().optional(),
   macAddress: macAddressSchema,
-  nickname: z.string().nullable().optional(),
+  nickname: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((v) => (v === '' ? null : v)),
   wifiUserId: z.uuid().nullable().optional(),
 });
 
 export const wifiDeviceUpdateSchema = wifiDeviceCreateSchema.partial();
 
 export const wifiNasCreateSchema = z.object({
-  comment: z.string().nullable().optional(),
+  comment: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((v) => (v === '' ? null : v)),
   ipAddress: z.string(),
   macAddress: macAddressSchema,
 });

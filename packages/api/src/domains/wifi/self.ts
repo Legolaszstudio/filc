@@ -26,7 +26,11 @@ export const wifiSelfSchema = z.object({
 });
 
 export const wifiSelfDeviceUpdateSchema = z.object({
-  nickname: z.string().max(100).nullable(),
+  nickname: z
+    .string()
+    .max(100)
+    .nullable()
+    .transform((v) => (v === '' ? null : v)),
 });
 
 export const wifiSelfPasswordChangeSchema = z.object({
