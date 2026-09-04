@@ -879,6 +879,8 @@
     "filterInactive": "Inactive (>45 days)",
     "filterActive": "Active (<45 days)",
     "filterMultipleMacs": "Shared MACs",
+    "filterManual": "Manually created users",
+    "createdByHint": "Created by: {{name}}",
     "minDevices": "Min devices",
     "macUsedMultipleTimes": "This MAC is shared by multiple users",
     "inactiveWarning": "Inactive for more than 45 days",

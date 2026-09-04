@@ -267,6 +267,14 @@ function WifiUsersPage() {
           keepUser = false;
         }
 
+        if (
+          filters.manualOnly &&
+          !user.isOrphan &&
+          user.userId === user.createdBy
+        ) {
+          keepUser = false;
+        }
+
         return {
           ...user,
           filteredDevices,
@@ -391,6 +399,13 @@ function WifiUsersPage() {
                               variant="outline"
                             >
                               {t('wifiAdminUsers.inactiveWarning', 'Inactive')}
+                            </Badge>
+                          )}
+                          {!isOrphan && user.userId !== user.createdBy && (
+                            <Badge variant="secondary" className="font-normal">
+                              {t('wifiAdminUsers.createdByHint', 'Created by: {{name}}', {
+                                name: user.creatorName ?? 'Admin',
+                              })}
                             </Badge>
                           )}
                         </div>

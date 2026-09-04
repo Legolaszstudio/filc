@@ -25,6 +25,7 @@ export type WifiFilterState = {
   inactiveOnly: boolean;
   activeOnly: boolean;
   sharedMacsOnly: boolean;
+  manualOnly: boolean;
   minDevices: number;
 };
 
@@ -32,6 +33,7 @@ export const defaultWifiFilterState: WifiFilterState = {
   activeOnly: false,
   bannedOnly: false,
   inactiveOnly: false,
+  manualOnly: false,
   minDevices: 0,
   sharedMacsOnly: false,
   speedProfileId: null,
@@ -132,6 +134,13 @@ export function WifiFilters({ filters, onChange }: WifiFiltersProps) {
           onCheckedChange={() => handleToggle('sharedMacsOnly')}
         >
           {t('wifiAdminUsers.filterMultipleMacs', 'Shared MACs')}
+        </DropdownMenuCheckboxItem>
+
+        <DropdownMenuCheckboxItem
+          checked={filters.manualOnly}
+          onCheckedChange={() => handleToggle('manualOnly')}
+        >
+          {t('wifiAdminUsers.filterManual', 'Manually created users')}
         </DropdownMenuCheckboxItem>
 
         <DropdownMenuSeparator />

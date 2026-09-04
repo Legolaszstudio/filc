@@ -879,6 +879,8 @@
     "filterInactive": "Inaktív (>45 napja)",
     "filterActive": "Aktív (<45 napja)",
     "filterMultipleMacs": "Megosztott MAC",
+    "filterManual": "Kézzel létrehozott fiókok",
+    "createdByHint": "Létrehozta: {{name}}",
     "minDevices": "Min eszköz",
     "macUsedMultipleTimes": "Ezt a MAC címet több felhasználó is használja",
     "inactiveWarning": "Több mint 45 napja inaktív",

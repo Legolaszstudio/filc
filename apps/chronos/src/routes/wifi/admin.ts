@@ -129,11 +129,17 @@ export const listWifiUsersRoute = wifiFactory.createHandlers(
   zValidator('query', wifiListQuerySchema),
   async (c) => {
     const { limit, offset, search } = c.req.valid('query');
+    const { getTableColumns } = await import('drizzle-orm');
+    const { user } = await import('#database/schema/authentication');
     const users = await db
-      .select()
+      .select({
+        ...getTableColumns(wifiUser),
+        creatorName: user.name,
+      })
       .from(wifiUser)
+      .leftJoin(user, eq(wifiUser.createdBy, user.id))
       .where(search ? ilike(wifiUser.username, `%${search}%`) : undefined)
-      .orderBy(desc(wifiUser.createdAt))
+      .orderBy(asc(wifiUser.createdAt))
       .limit(limit)
       .offset(offset);
     return ok(c, users);

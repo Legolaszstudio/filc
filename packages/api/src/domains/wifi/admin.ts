@@ -21,6 +21,7 @@ export const wifiUserSchema = z.object({
   comment: z.string().nullable(),
   createdAt: z.iso.datetime(),
   createdBy: z.uuid(),
+  creatorName: z.string().nullable().optional(),
   id: z.uuid(),
   lastActiveAt: z.iso.datetime().nullable(),
   speedProfileId: z.string().nullable(),
