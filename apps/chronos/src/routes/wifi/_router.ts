@@ -10,6 +10,7 @@ import {
   deleteWifiRoleProfileRoute,
   deleteWifiSpeedProfileRoute,
   deleteWifiUserRoute,
+  listWifiAuthLogsRoute,
   listWifiDevicesRoute,
   listWifiNasRoute,
   listWifiRoleProfilesRoute,
@@ -75,4 +76,5 @@ export const wifiRouter = wifiFactory
   .get('/role-speed-profiles', ...listWifiRoleProfilesRoute)
   .post('/role-speed-profiles', ...createWifiRoleProfileRoute)
   .put('/role-speed-profiles/:id', ...updateWifiRoleProfileRoute)
-  .delete('/role-speed-profiles/:id', ...deleteWifiRoleProfileRoute);
+  .delete('/role-speed-profiles/:id', ...deleteWifiRoleProfileRoute)
+  .get('/auth-logs', ...listWifiAuthLogsRoute);

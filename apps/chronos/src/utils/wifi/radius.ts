@@ -186,16 +186,6 @@ export const authorizeRadius = async (
 ): Promise<RadiusAuthorizeResult> => {
   const mac = normalizeSourceMac(request.source);
   const nasMac = normalizeNasMac(request.NAS);
-  if (!options.sharedSecret || request.sharedSecret !== options.sharedSecret) {
-    logger.warn('Radius request with invalid shared secret from {source}', {
-      source: request.source,
-    });
-    return reject(
-      403,
-      'You are not allowed to access this resource.',
-      'FORBIDDEN'
-    );
-  }
   const log = async (
     result: boolean,
     failureReason: string | null,
@@ -211,6 +201,17 @@ export const authorizeRadius = async (
       wifiUserId,
     });
   };
+  if (!options.sharedSecret || request.sharedSecret !== options.sharedSecret) {
+    logger.warn('Radius request with invalid shared secret from {source}', {
+      source: request.source,
+    });
+    await log(false, 'invalid_shared_secret');
+    return reject(
+      403,
+      'You are not allowed to access this resource.',
+      'FORBIDDEN'
+    );
+  }
   const sourceError = await validateRequestSource(
     request,
     options,

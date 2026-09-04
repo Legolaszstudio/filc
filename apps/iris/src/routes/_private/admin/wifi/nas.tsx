@@ -107,56 +107,56 @@ function WifiNasPage() {
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {query.isLoading ? (
-              <TableRow>
-                <TableCell className="h-24 text-center" colSpan={4}>
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : filteredNas.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  className="h-24 text-center text-muted-foreground"
-                  colSpan={4}
-                >
-                  {t('wifiAdminNas.noNasFound')}
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredNas.map((nas) => (
-                <TableRow key={nas.id}>
-                  <TableCell className="font-medium">{nas.ipAddress}</TableCell>
-                  <TableCell className="font-mono text-sm uppercase">
-                    {nas.macAddress
-                      .replace(/[^0-9a-fA-F]/g, '')
-                      .match(/.{1,2}/g)
-                      ?.join(':') ?? nas.macAddress}
-                  </TableCell>
-                  <TableCell>{nas.comment ?? '-'}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        onClick={() => handleEdit(nas)}
-                        size="icon"
-                        variant="ghost"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        className="text-destructive"
-                        onClick={() => handleDelete(nas)}
-                        size="icon"
-                        variant="ghost"
-                      >
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
+            <TableBody>
+              {(() => {
+                if (query.isLoading) {
+                  return (
+                    <TableRow>
+                      <TableCell className="text-center" colSpan={4}>
+                        {t('common.loading')}
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+
+                if (filteredNas.length === 0) {
+                  return (
+                    <TableRow>
+                      <TableCell className="text-center text-muted-foreground" colSpan={4}>
+                        {t('wifiAdminNas.noNasFound')}
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+
+                return filteredNas.map((nas) => (
+                  <TableRow key={nas.id}>
+                    <TableCell className="font-mono text-xs">{nas.ipAddress}</TableCell>
+                    <TableCell className="font-mono text-xs">{nas.macAddress}</TableCell>
+                    <TableCell>{nas.comment ?? '-'}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          onClick={() => handleEdit(nas)}
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          className="text-destructive"
+                          onClick={() => handleDelete(nas)}
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ));
+              })()}
+            </TableBody>
         </Table>
       </div>
 

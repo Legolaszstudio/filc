@@ -108,6 +108,13 @@ export const queryKeys = {
   usersAll: () => ['users'] as const,
   wifi: {
     admin: {
+      authLogs: (query: {
+        limit?: number;
+        offset?: number;
+        search?: string;
+        failureReason?: string;
+        result?: boolean;
+      }) => ['wifi', 'admin', 'authLogs', query] as const,
       devices: (query: {
         limit?: number;
         offset?: number;

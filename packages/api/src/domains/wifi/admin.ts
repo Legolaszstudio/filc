@@ -145,3 +145,26 @@ export type WifiDevice = z.infer<typeof wifiDeviceSchema>;
 export type WifiNas = z.infer<typeof wifiNasSchema>;
 export type WifiSpeedProfile = z.infer<typeof wifiSpeedProfileSchema>;
 export type WifiRoleSpeedProfile = z.infer<typeof wifiRoleSpeedProfileSchema>;
+
+export const wifiAuthLogSchema = z.object({
+  failureReason: z.string().nullable(),
+  id: z.number(),
+  macAddress: z.string(),
+  nasIpAddress: z.string().nullable(),
+  nasMacAddress: z.string().nullable(),
+  result: z.boolean(),
+  timestamp: z.iso.datetime(),
+  username: z.string(),
+  wifiUserId: z.uuid().nullable(),
+});
+
+export const wifiAuthLogListQuerySchema = wifiListQuerySchema.extend({
+  failureReason: z.string().optional(),
+  result: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((val) => (val === undefined ? undefined : val === 'true')),
+});
+
+export type WifiAuthLogListQuery = z.infer<typeof wifiAuthLogListQuerySchema>;
+export type WifiAuthLog = z.infer<typeof wifiAuthLogSchema>;

@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
+import { RelativeTime } from '@/components/wifi/relative-time';
 import {
   useCreateWifiAccount,
   useDownloadWifiCertificate,
@@ -22,7 +23,6 @@ import {
   useWifiStatus,
 } from '@/hooks/wifi';
 import { authClient } from '@/utils/authentication';
-import { RelativeTime } from '@/components/wifi/relative-time';
 
 export const Route = createFileRoute('/_private/wifi')({
   component: WifiPage,

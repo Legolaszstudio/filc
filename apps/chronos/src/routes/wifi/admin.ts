@@ -1,4 +1,6 @@
 import {
+  wifiAuthLogListQuerySchema,
+  wifiAuthLogSchema,
   wifiDeviceCreateSchema,
   wifiDeviceSchema,
   wifiDeviceUpdateSchema,
@@ -19,12 +21,13 @@ import {
 } from '@filcdev/api/domains/wifi/admin';
 import { permissions } from '@filcdev/api/permissions';
 import { zValidator } from '@hono/zod-validator';
-import { desc, eq, ilike } from 'drizzle-orm';
+import { and, desc, eq, ilike, or } from 'drizzle-orm';
 import { HTTPException } from 'hono/http-exception';
 import { describeRoute, resolver } from 'hono-openapi';
 import { StatusCodes } from 'http-status-codes';
 import { db } from '#database';
 import {
+  wifiAuthLog,
   wifiDevice,
   wifiNas,
   wifiRoleSpeedProfile,
@@ -660,5 +663,44 @@ export const deleteWifiRoleProfileRoute = wifiFactory.createHandlers(
       throw notFound('WiFi role mapping not found');
     }
     return ok(c, undefined);
+  }
+);
+
+const authLogListSchema = wifiAuthLogSchema.array();
+
+export const listWifiAuthLogsRoute = wifiFactory.createHandlers(
+  describeRoute({
+    ...filcExt('WiFi', '@unit WifiAuthLogListResponse'),
+    description: 'List WiFi auth logs.',
+    responses: response(authLogListSchema, 'WiFi auth logs'),
+    tags: ['WiFi'],
+  }),
+  ...authRouter(permissions.wifiRead),
+  zValidator('query', wifiAuthLogListQuerySchema),
+  async (c) => {
+    const { limit, offset, search, failureReason, result } =
+      c.req.valid('query');
+    const logs = await db
+      .select()
+      .from(wifiAuthLog)
+      .where(
+        and(
+          search
+            ? or(
+                ilike(wifiAuthLog.username, `%${search}%`),
+                ilike(wifiAuthLog.macAddress, `%${search}%`),
+                ilike(wifiAuthLog.nasIpAddress, `%${search}%`)
+              )
+            : undefined,
+          failureReason
+            ? eq(wifiAuthLog.failureReason, failureReason)
+            : undefined,
+          result === undefined ? undefined : eq(wifiAuthLog.result, result)
+        )
+      )
+      .orderBy(desc(wifiAuthLog.timestamp))
+      .limit(limit)
+      .offset(offset);
+    return ok(c, logs);
   }
 );

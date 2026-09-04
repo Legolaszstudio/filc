@@ -825,7 +825,22 @@
     "accepted": "Elfogadva",
     "rejected": "Elutasítva",
     "loadError": "Statisztikák betöltése sikertelen",
-    "loadErrorMessage": "Hiba történt az irányítópult adatainak lekérésekor."
+    "loadErrorMessage": "Hiba történt az irányítópult adatainak lekérésekor.",
+    "showingPage": "{{page}}. oldal",
+    "authLogs": "Hitelesítési napló",
+    "searchLogs": "Keresés felhasználónév, MAC, NAS IP...",
+    "filterResult": "Szűrés eredmény szerint",
+    "allResults": "Minden eredmény",
+    "successOnly": "Csak sikeres",
+    "failuresOnly": "Csak sikertelen",
+    "time": "Idő",
+    "username": "Felhasználónév",
+    "macAddress": "MAC cím",
+    "nas": "NAS IP/MAC",
+    "result": "Eredmény",
+    "success": "Sikeres",
+    "failed": "Sikertelen",
+    "noLogs": "Nem található naplóbejegyzés."
   },
   "wifiAdminUsers": {
     "createError": "Felhasználó létrehozása sikertelen",

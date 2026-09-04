@@ -56,6 +56,30 @@ export function useWifiDevices(query: WifiDeviceListQuery) {
   );
 }
 
+export function useWifiAuthLogs(
+  query: import('@filcdev/api/domains/wifi/admin').WifiAuthLogListQuery
+) {
+  return useApiQuery<import('@filcdev/api/domains/wifi/admin').WifiAuthLog[]>(
+    () =>
+      api.wifi['auth-logs'].$get({
+        query: {
+          ...query,
+          limit: query.limit?.toString(),
+          offset: query.offset?.toString(),
+          result:
+            query.result === undefined
+              ? undefined
+              : query.result
+                ? 'true'
+                : 'false',
+        } as any,
+      }),
+    {
+      queryKey: queryKeys.wifi.admin.authLogs(query),
+    }
+  );
+}
+
 export function useWifiNas() {
   return useApiQuery<WifiNas[]>(() => api.wifi.nas.$get() as any, {
     queryKey: queryKeys.wifi.admin.nas(),

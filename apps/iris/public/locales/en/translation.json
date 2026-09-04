@@ -825,7 +825,22 @@
     "accepted": "Accepted",
     "rejected": "Rejected",
     "loadError": "Unable to load statistics",
-    "loadErrorMessage": "Something went wrong while fetching the dashboard."
+    "loadErrorMessage": "Something went wrong while fetching the dashboard.",
+    "showingPage": "Page {{page}}",
+    "authLogs": "Authentication Logs",
+    "searchLogs": "Search username, MAC, NAS IP...",
+    "filterResult": "Filter by result",
+    "allResults": "All results",
+    "successOnly": "Success only",
+    "failuresOnly": "Failures only",
+    "time": "Time",
+    "username": "Username",
+    "macAddress": "MAC Address",
+    "nas": "NAS IP/MAC",
+    "result": "Result",
+    "success": "Success",
+    "failed": "Failed",
+    "noLogs": "No logs found."
   },
   "wifiAdminUsers": {
     "createError": "Failed to create user",
