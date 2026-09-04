@@ -240,6 +240,15 @@ function WifiUsersPage() {
         }
 
         if (
+          (filters.inactiveOnly ||
+            filters.activeOnly ||
+            filters.sharedMacsOnly) &&
+          filteredDevices.length === 0
+        ) {
+          keepUser = false;
+        }
+
+        if (
           filters.minDevices > 0 &&
           user.devices.length < filters.minDevices
         ) {
@@ -409,7 +418,7 @@ function WifiUsersPage() {
                         )}
                         {!isOrphan && (
                           <div className="hidden text-muted-foreground sm:flex">
-                            {user.devices.length}{' '}
+                            {user.filteredDevices.length}{' '}
                             {t('wifiAdminUsers.devices', 'Devices')}
                           </div>
                         )}
