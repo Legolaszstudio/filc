@@ -131,6 +131,7 @@
     }
   },
   "wifi": {
+    "accountReadyLater": "A fiók hamarosan elkészül",
     "setup": "Wi-Fi beállítás",
     "goToSetup": "Ugrás a Wi-Fi beállításokhoz",
     "title": "Wi‑Fi",
@@ -663,6 +664,7 @@
     }
   },
   "preferences": {
+    "languageChangeError": "Nyelv módosítása sikertelen",
     "title": "Beállítások",
     "description": "Személyre szabás és értesítési beállítások",
     "general": "Általános",
@@ -826,6 +828,13 @@
     "loadErrorMessage": "Hiba történt az irányítópult adatainak lekérésekor."
   },
   "wifiAdminUsers": {
+    "createError": "Felhasználó létrehozása sikertelen",
+    "updateError": "Felhasználó frissítése sikertelen",
+    "createDeviceSuccess": "Eszköz sikeresen létrehozva",
+    "updateDeviceSuccess": "Eszköz sikeresen frissítve",
+    "updateDeviceError": "Eszköz frissítése sikertelen",
+    "deleteDeviceSuccess": "Eszköz sikeresen törölve",
+    "deleteDeviceError": "Eszköz törlése sikertelen",
     "title": "Fiókok és Eszközök",
     "description": "WiFi felhasználók, eszközeik és MAC tiltások kezelése",
     "searchPlaceholder": "Felhasználók vagy eszközök keresése...",
@@ -879,6 +888,8 @@
     "createDeviceError": "Eszköz hozzáadása sikertelen"
   },
   "wifiAdminNas": {
+    "createError": "NAS létrehozása sikertelen",
+    "updateError": "NAS frissítése sikertelen",
     "title": "NAS Eszközök",
     "description": "Engedélyezett hálózati hozzáférési szerverek kezelése",
     "searchPlaceholder": "NAS eszközök keresése...",
@@ -940,5 +951,6 @@
     "deleteMappingConfirmTitle": "Leképezés törlése"
   },
   "close": "Bezárás",
-  "save": "Mentés"
+  "save": "Mentés",
+  "leaveBlankToKeep": "Hagyja üresen a jelenlegi megtartásához"
 }

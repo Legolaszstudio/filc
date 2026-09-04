@@ -146,6 +146,7 @@
     }
   },
   "wifi": {
+    "accountReadyLater": "Account will be ready in a few minutes",
     "setup": "Wi-Fi Setup",
     "goToSetup": "Go to Wi-Fi Setup",
     "title": "Wi‑Fi",
@@ -171,7 +172,6 @@
     "setupRecommendation": "Recommended next step",
     "setupRecommendationText": "Create or review your Wi‑Fi account to connect to {{ssid}}.",
     "skipForNow": "Skip for now",
-    "accountReadyLater": "Your Wi‑Fi account is not set up yet. It can be created from this page once the service is available.",
     "noAccountYet": "No Wi‑Fi account is linked to your user yet. You can create one here to start connecting to the network.",
     "createAccount": "Create Account",
     "password": "Password",
@@ -664,6 +664,7 @@
     }
   },
   "preferences": {
+    "languageChangeError": "Failed to change language",
     "title": "Preferences",
     "description": "Customize your experience and notification settings",
     "general": "General",
@@ -827,6 +828,13 @@
     "loadErrorMessage": "Something went wrong while fetching the dashboard."
   },
   "wifiAdminUsers": {
+    "createError": "Failed to create user",
+    "updateError": "Failed to update user",
+    "createDeviceSuccess": "Device created successfully",
+    "updateDeviceSuccess": "Device updated successfully",
+    "updateDeviceError": "Failed to update device",
+    "deleteDeviceSuccess": "Device deleted successfully",
+    "deleteDeviceError": "Failed to delete device",
     "title": "Accounts & Devices",
     "description": "Manage WiFi users, their devices, and MAC bans",
     "searchPlaceholder": "Search users or devices...",
@@ -880,6 +888,8 @@
     "createDeviceError": "Failed to create device"
   },
   "wifiAdminNas": {
+    "createError": "Failed to create NAS",
+    "updateError": "Failed to update NAS",
     "title": "NAS Devices",
     "description": "Manage authorized Network Access Servers",
     "searchPlaceholder": "Search NAS devices...",
@@ -941,5 +951,6 @@
     "deleteMappingConfirmTitle": "Delete Mapping"
   },
   "close": "Close",
-  "save": "Save"
+  "save": "Save",
+  "leaveBlankToKeep": "Leave blank to keep current"
 }

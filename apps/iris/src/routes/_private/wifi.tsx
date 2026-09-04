@@ -512,6 +512,7 @@ function DeviceItem({
         <div>
           <p className="font-medium">
             {device.nickname ?? device.reportedHostname ?? device.macAddress}
+            {device.nickname || device.reportedHostname || device.macAddress}
           </p>
           <p className="text-muted-foreground text-sm">
             {device.reportedHostname &&
@@ -519,6 +520,17 @@ function DeviceItem({
               ? device.reportedHostname
               : device.macAddress}
           </p>
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
+            {device.nickname && device.reportedHostname && device.nickname !== device.reportedHostname && (
+              <>
+                <span>{device.reportedHostname}</span>
+                <span>&bull;</span>
+              </>
+            )}
+            <span className="font-mono text-xs uppercase">
+              {device.macAddress.replace(/[^0-9a-fA-F]/g, '').match(/.{1,2}/g)?.join(':') ?? device.macAddress}
+            </span>
+          </div>
         </div>
       )}
       <div className="flex items-center gap-2">

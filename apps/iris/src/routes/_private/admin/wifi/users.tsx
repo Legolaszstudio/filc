@@ -506,6 +506,9 @@ function WifiUsersPage() {
                                       <div className="flex items-center gap-2">
                                         <Monitor className="h-4 w-4 text-muted-foreground" />
                                         {d.macAddress}
+                                        <span className="uppercase">
+                                          {d.macAddress.replace(/[^0-9a-fA-F]/g, '').match(/.{1,2}/g)?.join(':') ?? d.macAddress}
+                                        </span>
                                       </div>
                                     </TableCell>
                                     <TableCell>
