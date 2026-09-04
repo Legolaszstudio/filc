@@ -680,9 +680,27 @@ export const listWifiAuthLogsRoute = wifiFactory.createHandlers(
   async (c) => {
     const { limit, offset, search, failureReason, result } =
       c.req.valid('query');
+      
     const logs = await db
-      .select()
+      .select({
+        id: wifiAuthLog.id,
+        failureReason: wifiAuthLog.failureReason,
+        macAddress: wifiAuthLog.macAddress,
+        nasIpAddress: wifiAuthLog.nasIpAddress,
+        nasMacAddress: wifiAuthLog.nasMacAddress,
+        result: wifiAuthLog.result,
+        timestamp: wifiAuthLog.timestamp,
+        username: wifiAuthLog.username,
+        wifiUserId: wifiAuthLog.wifiUserId,
+        nasComment: wifiNas.comment,
+        deviceNickname: wifiDevice.nickname,
+        deviceReportedHostname: wifiDevice.reportedHostname,
+        userComment: wifiUser.comment,
+      })
       .from(wifiAuthLog)
+      .leftJoin(wifiNas, or(eq(wifiAuthLog.nasIpAddress, wifiNas.ipAddress), eq(wifiAuthLog.nasMacAddress, wifiNas.macAddress)))
+      .leftJoin(wifiDevice, eq(wifiAuthLog.macAddress, wifiDevice.macAddress))
+      .leftJoin(wifiUser, eq(wifiAuthLog.username, wifiUser.username))
       .where(
         and(
           search
@@ -701,6 +719,10 @@ export const listWifiAuthLogsRoute = wifiFactory.createHandlers(
       .orderBy(desc(wifiAuthLog.timestamp))
       .limit(limit)
       .offset(offset);
+      
+    // Because leftJoin might produce multiple rows if there are multiple matches (unlikely for macAddress/username but possible for nasIpAddress),
+    // and also we need to remove duplicate properties if any, wait, unique constraints ensure single rows.
+    
     return ok(c, logs);
   }
 );

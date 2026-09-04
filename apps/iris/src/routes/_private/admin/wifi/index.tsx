@@ -165,12 +165,13 @@ function WifiAuthLogs() {
             value={resultFilter}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue
-                placeholder={t(
-                  'wifiAdminDashboard.filterResult',
-                  'Filter by result'
-                )}
-              />
+              <SelectValue>
+                {resultFilter === 'success'
+                  ? t('wifiAdminDashboard.successOnly', 'Success only')
+                  : resultFilter === 'failure'
+                    ? t('wifiAdminDashboard.failuresOnly', 'Failures only')
+                    : t('wifiAdminDashboard.allResults', 'All results')}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">
@@ -235,18 +236,41 @@ function WifiAuthLogs() {
                     <TableCell>
                       <RelativeTime date={log.timestamp} />
                     </TableCell>
-                    <TableCell className="font-medium">
-                      {log.username}
-                    </TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {log.macAddress}
-                    </TableCell>
-                    <TableCell className="font-mono text-xs">
+                    <TableCell>
                       <div className="flex flex-col">
-                        <span>{log.nasIpAddress ?? '-'}</span>
-                        <span className="text-muted-foreground">
+                        <span className="font-medium">{log.username}</span>
+                        {log.userComment && (
+                          <span className="text-muted-foreground text-xs">
+                            {log.userComment}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-mono text-xs">{log.macAddress}</span>
+                        {log.deviceNickname ? (
+                          <span className="text-muted-foreground text-xs">
+                            {log.deviceNickname}
+                          </span>
+                        ) : log.deviceReportedHostname ? (
+                          <span className="text-muted-foreground text-xs">
+                            {log.deviceReportedHostname}
+                          </span>
+                        ) : null}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-mono text-xs">{log.nasIpAddress ?? '-'}</span>
+                        <span className="font-mono text-muted-foreground text-xs">
                           {log.nasMacAddress ?? ''}
                         </span>
+                        {log.nasComment && (
+                          <span className="text-muted-foreground text-xs">
+                            {log.nasComment}
+                          </span>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>

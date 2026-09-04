@@ -156,6 +156,10 @@ export const wifiAuthLogSchema = z.object({
   timestamp: z.iso.datetime(),
   username: z.string(),
   wifiUserId: z.uuid().nullable(),
+  nasComment: z.string().nullable().optional(),
+  deviceNickname: z.string().nullable().optional(),
+  deviceReportedHostname: z.string().nullable().optional(),
+  userComment: z.string().nullable().optional(),
 });
 
 export const wifiAuthLogListQuerySchema = wifiListQuerySchema.extend({
