@@ -306,9 +306,9 @@ function WifiSpeedProfilesPage() {
                         {!profile ? (
                           '-'
                         ) : profile.downloadSpeedMbps === null ? (
-                          <span className="text-muted-foreground text-sm">
-                            unlimited
-                          </span>
+                          <Badge variant="secondary">
+                            {t('wifiAdminProfiles.unlimited', 'Unlimited')}
+                          </Badge>
                         ) : (
                           profile.downloadSpeedMbps
                         )}
@@ -317,9 +317,9 @@ function WifiSpeedProfilesPage() {
                         {!profile ? (
                           '-'
                         ) : profile.uploadSpeedMbps === null ? (
-                          <span className="text-muted-foreground text-sm">
-                            unlimited
-                          </span>
+                          <Badge variant="secondary">
+                            {t('wifiAdminProfiles.unlimited', 'Unlimited')}
+                          </Badge>
                         ) : (
                           profile.uploadSpeedMbps
                         )}
