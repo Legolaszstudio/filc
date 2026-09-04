@@ -225,15 +225,21 @@ export class UnifiClient {
     name: string,
     downloadMbps = -1,
     uploadMbps = -1
-  ): Promise<UnifiSpeedProfile> =>
-    this.request(`/api/s/${this.config.site}/rest/usergroup`, {
-      body: JSON.stringify({
-        name,
-        qos_rate_max_down: downloadMbps === -1 ? -1 : downloadMbps * 1000,
-        qos_rate_max_up: uploadMbps === -1 ? -1 : uploadMbps * 1000,
-      }),
-      method: 'POST',
-    });
+  ): Promise<UnifiSpeedProfile> => {
+    const res = await this.request<UnifiSpeedProfile[]>(
+      `/api/s/${this.config.site}/rest/usergroup`,
+      {
+        body: JSON.stringify({
+          name,
+          qos_rate_max_down: downloadMbps === -1 ? -1 : downloadMbps * 1000,
+          qos_rate_max_up: uploadMbps === -1 ? -1 : uploadMbps * 1000,
+        }),
+        method: 'POST',
+      }
+    );
+    if (!res[0]) throw new Error('UniFi returned empty array');
+    return res[0];
+  };
 
   editUserGroup = async (
     id: string,
@@ -241,15 +247,21 @@ export class UnifiClient {
     name: string,
     downloadMbps: number,
     uploadMbps: number
-  ): Promise<UnifiSpeedProfile> =>
-    this.request(`/api/s/${siteId}/rest/usergroup/${id}`, {
-      body: JSON.stringify({
-        name,
-        qos_rate_max_down: downloadMbps === -1 ? -1 : downloadMbps * 1000,
-        qos_rate_max_up: uploadMbps === -1 ? -1 : uploadMbps * 1000,
-      }),
-      method: 'PUT',
-    });
+  ): Promise<UnifiSpeedProfile> => {
+    const res = await this.request<UnifiSpeedProfile[]>(
+      `/api/s/${siteId}/rest/usergroup/${id}`,
+      {
+        body: JSON.stringify({
+          name,
+          qos_rate_max_down: downloadMbps === -1 ? -1 : downloadMbps * 1000,
+          qos_rate_max_up: uploadMbps === -1 ? -1 : uploadMbps * 1000,
+        }),
+        method: 'PUT',
+      }
+    );
+    if (!res[0]) throw new Error('UniFi returned empty array');
+    return res[0];
+  };
 
   deleteUserGroup = async (id: string): Promise<void> =>
     this.request(`/api/s/${this.config.site}/rest/usergroup/${id}`, {

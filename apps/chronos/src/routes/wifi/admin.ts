@@ -476,22 +476,24 @@ export const listWifiSpeedProfilesRoute = wifiFactory.createHandlers(
   }),
   ...authRouter(permissions.wifiRead),
   async (c) => {
-    const profiles = await configured().getSpeedProfiles();
     const dbProfiles = await db
-      .select({
-        id: wifiSpeedProfile.id,
-        isWlanDefault: wifiSpeedProfile.isWlanDefault,
-      })
-      .from(wifiSpeedProfile);
+      .select()
+      .from(wifiSpeedProfile)
+      .orderBy(asc(wifiSpeedProfile.name));
 
     return ok(
       c,
-      profiles
-        .map((p) => {
-          const dbProfile = dbProfiles.find((dbp) => dbp.id === p.id);
-          return serializeSpeedProfile(p, dbProfile?.isWlanDefault ?? false);
-        })
-        .sort((a, b) => a.name.localeCompare(b.name))
+      dbProfiles.map((p) =>
+        serializeSpeedProfile(
+          {
+            downloadSpeedMbps: p.downloadSpeedMbps,
+            id: p.id,
+            name: p.name,
+            uploadSpeedMbps: p.uploadSpeedMbps,
+          },
+          p.isWlanDefault
+        )
+      )
     );
   }
 );
@@ -514,6 +516,15 @@ export const createWifiSpeedProfileRoute = wifiFactory.createHandlers(
     const controller = configured();
     const payload = c.req.valid('json');
     const profile = await controller.createSpeedProfile(payload);
+    
+    await db.insert(wifiSpeedProfile).values({
+      downloadSpeedMbps: profile.downloadSpeedMbps ?? null,
+      id: profile.id,
+      isWlanDefault: false,
+      name: profile.name,
+      uploadSpeedMbps: profile.uploadSpeedMbps ?? null,
+    });
+
     return created(c, { profile: serializeSpeedProfile(profile) });
   }
 );
@@ -536,12 +547,17 @@ export const updateWifiSpeedProfileRoute = wifiFactory.createHandlers(
   async (c) => {
     const controller = configured();
     const payload = c.req.valid('json');
-    const current = (await controller.getSpeedProfiles()).find(
-      (speedProfile) => speedProfile.id === c.req.valid('param').id
-    );
+    
+    const [current] = await db
+      .select()
+      .from(wifiSpeedProfile)
+      .where(eq(wifiSpeedProfile.id, c.req.valid('param').id))
+      .limit(1);
+
     if (!current) {
       throw notFound('WiFi speed profile not found');
     }
+
     const profile = await controller.updateSpeedProfile(
       c.req.valid('param').id,
       {
@@ -552,11 +568,18 @@ export const updateWifiSpeedProfileRoute = wifiFactory.createHandlers(
           payload.uploadSpeedMbps ?? current.uploadSpeedMbps ?? -1,
       }
     );
+    
     const [dbProfile] = await db
-      .select({ isWlanDefault: wifiSpeedProfile.isWlanDefault })
-      .from(wifiSpeedProfile)
+      .update(wifiSpeedProfile)
+      .set({
+        downloadSpeedMbps: profile.downloadSpeedMbps ?? null,
+        name: profile.name,
+        uploadSpeedMbps: profile.uploadSpeedMbps ?? null,
+        syncedAt: new Date(),
+      })
       .where(eq(wifiSpeedProfile.id, profile.id))
-      .limit(1);
+      .returning({ isWlanDefault: wifiSpeedProfile.isWlanDefault });
+
     return ok(
       c,
       serializeSpeedProfile(profile, dbProfile?.isWlanDefault ?? false)
@@ -574,7 +597,9 @@ export const deleteWifiSpeedProfileRoute = wifiFactory.createHandlers(
   ...authRouter(permissions.wifiWrite),
   zValidator('param', wifiStringIdParamSchema),
   async (c) => {
-    await configured().deleteSpeedProfile(c.req.valid('param').id);
+    const id = c.req.valid('param').id;
+    await configured().deleteSpeedProfile(id);
+    await db.delete(wifiSpeedProfile).where(eq(wifiSpeedProfile.id, id));
     return ok(c, undefined);
   }
 );
