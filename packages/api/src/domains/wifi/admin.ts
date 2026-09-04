@@ -4,6 +4,7 @@ const macRegex = /^([0-9a-fA-F]{2}[:-]){5}([0-9a-fA-F]{2})$/i;
 const macAddressSchema = z.string().regex(macRegex, 'Invalid MAC address');
 
 export const wifiIdParamSchema = z.object({ id: z.uuid() });
+export const wifiStringIdParamSchema = z.object({ id: z.string().min(1) });
 export const wifiListQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(10_000).default(10_000),
   offset: z.coerce.number().int().min(0).default(0),

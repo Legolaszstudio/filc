@@ -303,21 +303,25 @@ function WifiSpeedProfilesPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        {m.downloadSpeedMbps === null ? (
+                        {!profile ? (
+                          '-'
+                        ) : profile.downloadSpeedMbps === null ? (
                           <span className="text-muted-foreground text-sm">
-                            inherited
+                            unlimited
                           </span>
                         ) : (
-                          m.downloadSpeedMbps
+                          profile.downloadSpeedMbps
                         )}
                       </TableCell>
                       <TableCell>
-                        {m.uploadSpeedMbps === null ? (
+                        {!profile ? (
+                          '-'
+                        ) : profile.uploadSpeedMbps === null ? (
                           <span className="text-muted-foreground text-sm">
-                            inherited
+                            unlimited
                           </span>
                         ) : (
-                          m.uploadSpeedMbps
+                          profile.uploadSpeedMbps
                         )}
                       </TableCell>
                       <TableCell className="text-right">

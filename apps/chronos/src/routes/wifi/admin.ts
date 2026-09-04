@@ -18,6 +18,7 @@ import {
   wifiUserCreateSchema,
   wifiUserSchema,
   wifiUserUpdateSchema,
+  wifiStringIdParamSchema,
 } from '@filcdev/api/domains/wifi/admin';
 import { permissions } from '@filcdev/api/permissions';
 import { zValidator } from '@hono/zod-validator';
@@ -523,7 +524,7 @@ export const updateWifiSpeedProfileRoute = wifiFactory.createHandlers(
   }),
   ...authRouter(permissions.wifiWrite),
   zValidator('json', wifiSpeedProfileUpdateSchema),
-  zValidator('param', wifiIdParamSchema),
+  zValidator('param', wifiStringIdParamSchema),
   async (c) => {
     const controller = configured();
     const payload = c.req.valid('json');
@@ -563,7 +564,7 @@ export const deleteWifiSpeedProfileRoute = wifiFactory.createHandlers(
     tags: ['WiFi'],
   }),
   ...authRouter(permissions.wifiWrite),
-  zValidator('param', wifiIdParamSchema),
+  zValidator('param', wifiStringIdParamSchema),
   async (c) => {
     await configured().deleteSpeedProfile(c.req.valid('param').id);
     return ok(c, undefined);
@@ -631,7 +632,7 @@ export const updateWifiRoleProfileRoute = wifiFactory.createHandlers(
   }),
   ...authRouter(permissions.wifiWrite),
   zValidator('json', wifiRoleSpeedProfileUpdateSchema),
-  zValidator('param', wifiIdParamSchema),
+  zValidator('param', wifiStringIdParamSchema),
   async (c) => {
     const [mapping] = await db
       .update(wifiRoleSpeedProfile)
@@ -653,7 +654,7 @@ export const deleteWifiRoleProfileRoute = wifiFactory.createHandlers(
     tags: ['WiFi'],
   }),
   ...authRouter(permissions.wifiWrite),
-  zValidator('param', wifiIdParamSchema),
+  zValidator('param', wifiStringIdParamSchema),
   async (c) => {
     const [deleted] = await db
       .delete(wifiRoleSpeedProfile)

@@ -757,7 +757,9 @@ export function WifiRoleProfileDialog({
                   value={field.state.value}
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue>
+                      {profiles.find((p) => p.id === field.state.value)?.name ?? field.state.value}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {profiles.map((p) => (
@@ -785,48 +787,6 @@ export function WifiRoleProfileDialog({
                   type="number"
                   value={field.state.value}
                 />
-                <FieldError errors={field.state.meta.errors} />
-              </Field>
-            )}
-          </form.Field>
-
-          <form.Field name="downloadSpeedMbps">
-            {(field) => (
-              <Field>
-                <FieldLabel>
-                  {t('wifiAdminProfiles.download', 'Download (Mbps)')}
-                </FieldLabel>
-                <Input
-                  onChange={(e) =>
-                    field.handleChange(Number.parseInt(e.target.value, 10))
-                  }
-                  type="number"
-                  value={field.state.value}
-                />
-                <p className="mt-1 text-muted-foreground text-xs">
-                  -1 for unlimited / inherited
-                </p>
-                <FieldError errors={field.state.meta.errors} />
-              </Field>
-            )}
-          </form.Field>
-
-          <form.Field name="uploadSpeedMbps">
-            {(field) => (
-              <Field>
-                <FieldLabel>
-                  {t('wifiAdminProfiles.upload', 'Upload (Mbps)')}
-                </FieldLabel>
-                <Input
-                  onChange={(e) =>
-                    field.handleChange(Number.parseInt(e.target.value, 10))
-                  }
-                  type="number"
-                  value={field.state.value}
-                />
-                <p className="mt-1 text-muted-foreground text-xs">
-                  -1 for unlimited / inherited
-                </p>
                 <FieldError errors={field.state.meta.errors} />
               </Field>
             )}
