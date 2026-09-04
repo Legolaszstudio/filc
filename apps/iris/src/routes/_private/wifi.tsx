@@ -504,7 +504,6 @@ function DeviceItem({
       ) : (
         <div>
           <p className="font-medium">
-            {device.nickname ?? device.reportedHostname ?? device.macAddress}
             {device.nickname || device.reportedHostname || device.macAddress}
           </p>
           <p className="text-muted-foreground text-sm">
