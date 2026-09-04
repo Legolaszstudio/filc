@@ -127,8 +127,6 @@ function WifiNasPage() {
               filteredNas.map((nas) => (
                 <TableRow key={nas.id}>
                   <TableCell className="font-medium">{nas.ipAddress}</TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {nas.macAddress}
                   <TableCell className="font-mono text-sm uppercase">
                     {nas.macAddress.replace(/[^0-9a-fA-F]/g, '').match(/.{1,2}/g)?.join(':') ?? nas.macAddress}
                   </TableCell>
