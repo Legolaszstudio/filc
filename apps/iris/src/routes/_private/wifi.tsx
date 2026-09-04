@@ -22,6 +22,7 @@ import {
   useWifiStatus,
 } from '@/hooks/wifi';
 import { authClient } from '@/utils/authentication';
+import { RelativeTime } from '@/components/wifi/relative-time';
 
 export const Route = createFileRoute('/_private/wifi')({
   component: WifiPage,
@@ -566,9 +567,11 @@ function DeviceItem({
                 <Badge variant="outline">{t('wifi.active')}</Badge>
               )}
               <span>
-                {device.lastActiveAt
-                  ? new Date(device.lastActiveAt).toLocaleDateString()
-                  : t('wifi.never')}
+                {device.lastActiveAt ? (
+                  <RelativeTime date={device.lastActiveAt} />
+                ) : (
+                  t('wifi.never')
+                )}
               </span>
             </div>
             {!device.banned && (
