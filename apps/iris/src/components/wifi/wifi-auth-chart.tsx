@@ -16,7 +16,7 @@ const chartConfig = {
     label: 'Accepted',
   },
   rejected: {
-    color: 'hsl(var(--destructive))',
+    color: 'var(--destructive)',
     label: 'Rejected',
   },
 } satisfies ChartConfig;

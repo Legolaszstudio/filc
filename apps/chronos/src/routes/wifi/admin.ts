@@ -716,7 +716,8 @@ export const listWifiAuthLogsRoute = wifiFactory.createHandlers(
             ? or(
                 ilike(wifiAuthLog.username, `%${search}%`),
                 ilike(wifiAuthLog.macAddress, `%${search}%`),
-                ilike(wifiAuthLog.nasIpAddress, `%${search}%`)
+                ilike(wifiAuthLog.nasIpAddress, `%${search}%`),
+                ilike(wifiAuthLog.failureReason, `%${search}%`)
               )
             : undefined,
           failureReason
