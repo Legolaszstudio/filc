@@ -135,11 +135,21 @@ function WifiUsersPage() {
       devicesByUserId.get(uid)?.push(d);
     }
 
-    const result = users.map((u) => ({
-      ...u,
-      devices: devicesByUserId.get(u.id) ?? [],
-      isOrphan: false,
-    }));
+    const result = users.map((u) => {
+      const userDevices = devicesByUserId.get(u.id) ?? [];
+      const lastActiveAt = userDevices.reduce<string | null>((latest, d) => {
+        if (!d.lastActiveAt) return latest;
+        if (!latest) return d.lastActiveAt;
+        return new Date(d.lastActiveAt) > new Date(latest) ? d.lastActiveAt : latest;
+      }, null);
+
+      return {
+        ...u,
+        devices: userDevices,
+        isOrphan: false,
+        lastActiveAt,
+      };
+    });
 
     const orphans = devicesByUserId.get(null) ?? [];
     if (orphans.length > 0) {
