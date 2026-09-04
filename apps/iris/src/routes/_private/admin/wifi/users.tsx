@@ -20,6 +20,14 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -68,6 +76,9 @@ function WifiUsersPage() {
     {}
   );
 
+  const [userToDelete, setUserToDelete] = useState<WifiUser | null>(null);
+  const [deviceToDelete, setDeviceToDelete] = useState<WifiDevice | null>(null);
+
   const usersQuery = useWifiUsers({ limit: 10_000, offset: 0 });
   const devicesQuery = useWifiDevices({ limit: 10_000, offset: 0 });
   const profilesQuery = useWifiSpeedProfiles();
@@ -87,9 +98,7 @@ function WifiUsersPage() {
   };
 
   const handleDeleteUser = (user: WifiUser) => {
-    if (window.confirm(t('wifiAdminUsers.deleteConfirmTitle', 'Delete User'))) {
-      deleteUserMutation.mutate(user.id);
-    }
+    setUserToDelete(user);
   };
 
   const handleEditDevice = (device: WifiDevice) => {
@@ -104,13 +113,7 @@ function WifiUsersPage() {
   };
 
   const handleDeleteDevice = (device: WifiDevice) => {
-    if (
-      window.confirm(
-        t('wifiAdminUsers.deleteDeviceConfirmTitle', 'Delete Device')
-      )
-    ) {
-      deleteDeviceMutation.mutate(device.id);
-    }
+    setDeviceToDelete(device);
   };
 
   const users = usersQuery.data ?? [];
@@ -625,6 +628,80 @@ function WifiUsersPage() {
           wifiUserId={targetUserId}
         />
       )}
+
+      <Dialog
+        onOpenChange={(open) => !open && setUserToDelete(null)}
+        open={!!userToDelete}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {t('wifiAdminUsers.deleteConfirmTitle', 'Delete User')}
+            </DialogTitle>
+            <DialogDescription>
+              {t(
+                'wifiAdminUsers.deleteUserWarning',
+                'Are you sure you want to delete this user? Deleting a user does not equate to banning them, as they can simply reregister their account.'
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setUserToDelete(null)} variant="outline">
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button
+              disabled={deleteUserMutation.isPending}
+              onClick={() => {
+                if (userToDelete) {
+                  deleteUserMutation.mutate(userToDelete.id, {
+                    onSuccess: () => setUserToDelete(null),
+                  });
+                }
+              }}
+              variant="destructive"
+            >
+              {t('common.delete', 'Delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        onOpenChange={(open) => !open && setDeviceToDelete(null)}
+        open={!!deviceToDelete}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {t('wifiAdminUsers.deleteDeviceConfirmTitle', 'Delete Device')}
+            </DialogTitle>
+            <DialogDescription>
+              {t(
+                'wifiAdminUsers.deleteDeviceWarning',
+                'Are you sure you want to delete this device? Deleting a device does not equate to banning it, as it can simply rejoin the network.'
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setDeviceToDelete(null)} variant="outline">
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button
+              disabled={deleteDeviceMutation.isPending}
+              onClick={() => {
+                if (deviceToDelete) {
+                  deleteDeviceMutation.mutate(deviceToDelete.id, {
+                    onSuccess: () => setDeviceToDelete(null),
+                  });
+                }
+              }}
+              variant="destructive"
+            >
+              {t('common.delete', 'Delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

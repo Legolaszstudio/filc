@@ -885,7 +885,9 @@
     "deleteConfirmDescription": "Biztosan törölni szeretnéd ezt a felhasználót? A hozzá tartozó eszközök is törlésre kerülnek.",
     "deleteDeviceConfirmTitle": "Eszköz törlése",
     "deleteDeviceConfirmDescription": "Biztosan törölni szeretnéd ezt az eszközt?",
-    "createDeviceError": "Eszköz hozzáadása sikertelen"
+    "createDeviceError": "Eszköz hozzáadása sikertelen",
+    "deleteUserWarning": "Biztosan törölni szeretnéd ezt a felhasználót? A felhasználó törlése nem egyenlő a kitiltásával, mivel egyszerűen újra regisztrálhatja a fiókját.",
+    "deleteDeviceWarning": "Biztosan törölni szeretnéd ezt az eszközt? Az eszköz törlése nem egyenlő a kitiltásával, mivel egyszerűen újra csatlakozhat a hálózathoz."
   },
   "wifiAdminNas": {
     "createError": "NAS létrehozása sikertelen",

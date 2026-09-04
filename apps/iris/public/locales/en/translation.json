@@ -885,7 +885,9 @@
     "deleteConfirmDescription": "Are you sure you want to delete this user? Their connected devices will also be removed.",
     "deleteDeviceConfirmTitle": "Delete Device",
     "deleteDeviceConfirmDescription": "Are you sure you want to delete this device?",
-    "createDeviceError": "Failed to create device"
+    "createDeviceError": "Failed to create device",
+    "deleteUserWarning": "Are you sure you want to delete this user? Deleting a user does not equate to banning them, as they can simply reregister their account.",
+    "deleteDeviceWarning": "Are you sure you want to delete this device? Deleting a device does not equate to banning it, as it can simply rejoin the network."
   },
   "wifiAdminNas": {
     "createError": "Failed to create NAS",
