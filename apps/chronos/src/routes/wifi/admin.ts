@@ -15,14 +15,14 @@ import {
   wifiSpeedProfileCreateSchema,
   wifiSpeedProfileSchema,
   wifiSpeedProfileUpdateSchema,
+  wifiStringIdParamSchema,
   wifiUserCreateSchema,
   wifiUserSchema,
   wifiUserUpdateSchema,
-  wifiStringIdParamSchema,
 } from '@filcdev/api/domains/wifi/admin';
 import { permissions } from '@filcdev/api/permissions';
 import { zValidator } from '@hono/zod-validator';
-import { and, desc, eq, ilike, or } from 'drizzle-orm';
+import { and, asc, desc, eq, ilike, or } from 'drizzle-orm';
 import { HTTPException } from 'hono/http-exception';
 import { describeRoute, resolver } from 'hono-openapi';
 import { StatusCodes } from 'http-status-codes';
@@ -381,7 +381,7 @@ export const listWifiNasRoute = wifiFactory.createHandlers(
   }),
   ...authRouter(permissions.wifiRead),
   async (c) =>
-    ok(c, await db.select().from(wifiNas).orderBy(desc(wifiNas.updatedAt)))
+    ok(c, await db.select().from(wifiNas).orderBy(asc(wifiNas.ipAddress)))
 );
 
 export const createWifiNasRoute = wifiFactory.createHandlers(
@@ -480,10 +480,12 @@ export const listWifiSpeedProfilesRoute = wifiFactory.createHandlers(
 
     return ok(
       c,
-      profiles.map((p) => {
-        const dbProfile = dbProfiles.find((dbp) => dbp.id === p.id);
-        return serializeSpeedProfile(p, dbProfile?.isWlanDefault ?? false);
-      })
+      profiles
+        .map((p) => {
+          const dbProfile = dbProfiles.find((dbp) => dbp.id === p.id);
+          return serializeSpeedProfile(p, dbProfile?.isWlanDefault ?? false);
+        })
+        .sort((a, b) => a.name.localeCompare(b.name))
     );
   }
 );
@@ -681,25 +683,31 @@ export const listWifiAuthLogsRoute = wifiFactory.createHandlers(
   async (c) => {
     const { limit, offset, search, failureReason, result } =
       c.req.valid('query');
-      
+
     const logs = await db
       .select({
-        id: wifiAuthLog.id,
+        deviceNickname: wifiDevice.nickname,
+        deviceReportedHostname: wifiDevice.reportedHostname,
         failureReason: wifiAuthLog.failureReason,
+        id: wifiAuthLog.id,
         macAddress: wifiAuthLog.macAddress,
+        nasComment: wifiNas.comment,
         nasIpAddress: wifiAuthLog.nasIpAddress,
         nasMacAddress: wifiAuthLog.nasMacAddress,
         result: wifiAuthLog.result,
         timestamp: wifiAuthLog.timestamp,
+        userComment: wifiUser.comment,
         username: wifiAuthLog.username,
         wifiUserId: wifiAuthLog.wifiUserId,
-        nasComment: wifiNas.comment,
-        deviceNickname: wifiDevice.nickname,
-        deviceReportedHostname: wifiDevice.reportedHostname,
-        userComment: wifiUser.comment,
       })
       .from(wifiAuthLog)
-      .leftJoin(wifiNas, or(eq(wifiAuthLog.nasIpAddress, wifiNas.ipAddress), eq(wifiAuthLog.nasMacAddress, wifiNas.macAddress)))
+      .leftJoin(
+        wifiNas,
+        or(
+          eq(wifiAuthLog.nasIpAddress, wifiNas.ipAddress),
+          eq(wifiAuthLog.nasMacAddress, wifiNas.macAddress)
+        )
+      )
       .leftJoin(wifiDevice, eq(wifiAuthLog.macAddress, wifiDevice.macAddress))
       .leftJoin(wifiUser, eq(wifiAuthLog.username, wifiUser.username))
       .where(
@@ -720,10 +728,10 @@ export const listWifiAuthLogsRoute = wifiFactory.createHandlers(
       .orderBy(desc(wifiAuthLog.timestamp))
       .limit(limit)
       .offset(offset);
-      
+
     // Because leftJoin might produce multiple rows if there are multiple matches (unlikely for macAddress/username but possible for nasIpAddress),
     // and also we need to remove duplicate properties if any, wait, unique constraints ensure single rows.
-    
+
     return ok(c, logs);
   }
 );
