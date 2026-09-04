@@ -128,7 +128,10 @@ function WifiNasPage() {
                 <TableRow key={nas.id}>
                   <TableCell className="font-medium">{nas.ipAddress}</TableCell>
                   <TableCell className="font-mono text-sm uppercase">
-                    {nas.macAddress.replace(/[^0-9a-fA-F]/g, '').match(/.{1,2}/g)?.join(':') ?? nas.macAddress}
+                    {nas.macAddress
+                      .replace(/[^0-9a-fA-F]/g, '')
+                      .match(/.{1,2}/g)
+                      ?.join(':') ?? nas.macAddress}
                   </TableCell>
                   <TableCell>{nas.comment ?? '-'}</TableCell>
                   <TableCell className="text-right">

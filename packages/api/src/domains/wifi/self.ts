@@ -19,7 +19,6 @@ export const wifiSpeedLimitInfoSchema = z.object({
 
 export const wifiSelfSchema = z.object({
   banned: z.boolean(),
-  comment: z.string().nullable(),
   devices: z.array(wifiSelfDeviceSchema),
   speedLimit: wifiSpeedLimitInfoSchema,
   username: z.string(),

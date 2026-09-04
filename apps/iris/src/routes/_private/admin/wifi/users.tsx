@@ -3,7 +3,6 @@ import { createFileRoute } from '@tanstack/react-router';
 import { differenceInDays } from 'date-fns';
 import {
   AlertTriangle,
-  Monitor,
   Pencil,
   Plus,
   RefreshCw,
@@ -505,7 +504,10 @@ function WifiUsersPage() {
                                     <TableCell className="font-mono">
                                       <div className="flex items-center gap-2">
                                         <span className="uppercase">
-                                          {d.macAddress.replace(/[^0-9a-fA-F]/g, '').match(/.{1,2}/g)?.join(':') ?? d.macAddress}
+                                          {d.macAddress
+                                            .replace(/[^0-9a-fA-F]/g, '')
+                                            .match(/.{1,2}/g)
+                                            ?.join(':') ?? d.macAddress}
                                         </span>
                                       </div>
                                     </TableCell>

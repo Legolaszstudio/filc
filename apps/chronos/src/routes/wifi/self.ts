@@ -157,7 +157,6 @@ export const createSelfWifiRoute = wifiFactory.createHandlers(
     return ok(c, {
       wifi: {
         banned: account.banned,
-        comment: account.comment,
         devices,
         speedLimit,
         username: account.username,
@@ -197,7 +196,6 @@ export const getSelfWifiRoute = wifiFactory.createHandlers(
     return ok(c, {
       wifi: {
         banned: account.banned,
-        comment: account.comment,
         devices,
         speedLimit: {
           downloadSpeedMbps: speed.downloadSpeedMbps,

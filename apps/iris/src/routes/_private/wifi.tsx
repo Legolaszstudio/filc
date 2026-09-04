@@ -387,13 +387,6 @@ function AccountSummary({
               <p className="font-medium">{ssid}</p>
             </div>
           </div>
-
-          {account.comment ? (
-            <div>
-              <p className="text-muted-foreground text-sm">{t('wifi.note')}</p>
-              <p>{account.comment}</p>
-            </div>
-          ) : null}
         </CardContent>
       </Card>
 
@@ -521,14 +514,19 @@ function DeviceItem({
               : device.macAddress}
           </p>
           <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            {device.nickname && device.reportedHostname && device.nickname !== device.reportedHostname && (
-              <>
-                <span>{device.reportedHostname}</span>
-                <span>&bull;</span>
-              </>
-            )}
+            {device.nickname &&
+              device.reportedHostname &&
+              device.nickname !== device.reportedHostname && (
+                <>
+                  <span>{device.reportedHostname}</span>
+                  <span>&bull;</span>
+                </>
+              )}
             <span className="font-mono text-xs uppercase">
-              {device.macAddress.replace(/[^0-9a-fA-F]/g, '').match(/.{1,2}/g)?.join(':') ?? device.macAddress}
+              {device.macAddress
+                .replace(/[^0-9a-fA-F]/g, '')
+                .match(/.{1,2}/g)
+                ?.join(':') ?? device.macAddress}
             </span>
           </div>
         </div>
