@@ -395,7 +395,7 @@ function WifiUsersPage() {
                   >
                     <div className="flex w-full items-center justify-between pr-4">
                       <div className="flex items-center gap-4 text-left">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <Users className="h-4 w-4 text-muted-foreground" />
                           <span className="font-semibold">{user.username}</span>
                           {user.banned && (
@@ -448,7 +448,7 @@ function WifiUsersPage() {
                           </div>
                         )}
                         {!isOrphan && (
-                          <div className="w-[140px] text-right">
+                          <div className="hidden w-[140px] text-right min-[460px]:block">
                             <RelativeTime date={user.lastActiveAt} />
                           </div>
                         )}
@@ -458,7 +458,7 @@ function WifiUsersPage() {
                   <CollapsibleContent>
                     <div className="flex flex-col gap-4 py-2">
                       {!isOrphan && (
-                        <div className="flex items-center justify-between border-b pb-4">
+                        <div className="flex flex-col gap-4 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
                           <div className="flex gap-4 text-muted-foreground text-sm">
                             {user.speedProfileId && (
                               <span>
@@ -473,7 +473,7 @@ function WifiUsersPage() {
                               </span>
                             )}
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-2">
                             <Button
                               onClick={() => handleEditUser(user as WifiUser)}
                               size="sm"
